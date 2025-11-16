@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>금쪽이 – 금융 퀴즈 베타</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<!-- 상단 바 -->
+<header class="top-bar">
+    <div class="top-title">금쪽이 – 금융 퀴즈 베타</div>
+    <div class="top-score">점수: <span id="score">0</span></div>
+</header>
+
+<main class="main-container">
+
+    <!-- ① 홈 화면 -->
+    <section id="home-screen" class="screen active">
+        <div class="card">
+            <h1>금쪽이 금융 퀴즈</h1>
+            <p class="stage-summary">
+                금융 지식을 스테이지 형식으로 풀어보는<br />
+                캐주얼 웹 퀴즈 게임의 베타 버전입니다.
+            </p>
+            <button id="to-roadmap-btn">금융사 로드맵으로 이동</button>
+        </div>
+    </section>
+
+    <!-- ② 로드맵 화면 -->
+    <section id="roadmap-screen" class="screen">
+        <div class="card">
+            <h1>금융사 로드맵</h1>
+            <p class="stage-summary">
+                현재는 베타 스테이지(과일 스테이지)만 열려 있습니다.<br />
+                이후에는 금융사 사건(대공황, 리먼 브라더스 등)으로 확장될 예정입니다.
+            </p>
+            <button id="start-stage-btn">스테이지 1 – 과일 스테이지 시작</button>
+            <button class="ghost" id="back-home-btn">시작 화면으로 돌아가기</button>
+        </div>
+    </section>
+
+    <!-- ③ 퀴즈 화면 -->
+    <section id="quiz-screen" class="screen">
+        <div class="card">
+            <h1 id="stage-title">스테이지 제목</h1>
+            <p class="stage-summary" id="stage-summary"></p>
+
+            <div class="meta-row">
+                <span id="phase-label" class="pill pill-phase"></span>
+                <span id="progress-label" class="pill pill-progress"></span>
+            </div>
+
+            <div class="question-block">
+                <div id="question-text" class="question-text">문제가 여기 표시됩니다.</div>
+                <div id="options-container"></div>
+                <input id="short-answer" class="short-input" type="text" placeholder="정답을 입력하세요" />
+            </div>
+
+            <div class="button-row">
+                <button id="submit-btn">정답 제출</button>
+                <button id="next-btn" disabled>다음 문제</button>
+                <button id="hint-btn">힌트 보기</button>
+                <button id="reset-btn" class="ghost">스테이지 리셋</button>
+                <button id="back-roadmap-from-quiz" class="ghost">로드맵으로</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div class="clue-box">
+                <div class="clue-title">획득한 단서</div>
+                <div id="clue-text" class="clue-text">아직 획득한 단서가 없습니다.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ④ 스테이지 요약 화면 -->
+    <section id="summary-screen" class="screen">
+        <div class="card">
+            <h1 id="summary-stage-title">스테이지 요약</h1>
+            <p id="summary-text" class="stage-summary"></p>
+
+            <div class="meta-row">
+                <span class="pill pill-phase">클리어 요약</span>
+            </div>
+
+            <p class="final-score-text">
+                최종 점수: <span id="final-score">0</span> 점
+            </p>
+
+            <div class="clue-box">
+                <div class="clue-title">이 스테이지에서 모은 단서</div>
+                <div id="summary-clues" class="clue-text"></div>
+            </div>
+
+            <div class="button-row">
+                <button id="summary-to-roadmap-btn">로드맵으로 돌아가기</button>
+                <button class="ghost" id="summary-restart-btn">이 스테이지 다시 풀기</button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
