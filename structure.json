@@ -1,0 +1,31 @@
+{
+  "stageId": "stage1",
+  "title": "과일 스테이지",
+  "themeAnswer": "APPLE",
+  "questions": [
+    {
+      "id": "q1",
+      "type": "mcq",
+      "question": "다음 중 빨간색 과일은?",
+      "options": ["바나나", "사과", "포도"],
+      "answer": 1,
+      "hint": "한국 사람들이 제일 많이 먹는 과일 중 하나예요.",
+      "clue": "A"
+    },
+    {
+      "id": "q2",
+      "type": "short",
+      "question": "strawberry를 한국어로 하면 무엇인가요?",
+      "answer": "딸기",
+      "hint": "빨간색이고, 케이크 위에도 자주 올라갑니다.",
+      "clue": "P"
+    },
+    {
+      "id": "themeQuestion",
+      "type": "short",
+      "question": "지금까지 모은 단서를 조합하면 어떤 단어가 될까요?",
+      "answer": "APPLE",
+      "hint": "빨갛고 둥근 과일이에요."
+    }
+  ]
+}
