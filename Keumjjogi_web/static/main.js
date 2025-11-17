@@ -1,3 +1,4 @@
+// main.js
 let currentState = null;   // 서버에서 내려주는 publicState
 let lastResult = null;     // 마지막 submit 결과
 
@@ -62,6 +63,27 @@ async function submitAnswer() {
     }
 }
 
+// 🔹 특정 스테이지를 선택해서 시작
+async function startStage(stageId) {
+    const res = await fetch("/api/start_stage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stageId }),
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(err.message || "스테이지를 불러오는 중 오류가 발생했습니다.");
+        return;
+    }
+
+    currentState = await res.json();
+    lastResult = null;
+    renderAll();
+    showScreen("quiz");
+}
+
+
 async function goNext() {
     const res = await fetch("/api/next", { method: "POST" });
     const data = await res.json();
@@ -96,6 +118,11 @@ async function resetStageWithConfirm() {
 function renderAll() {
     if (!currentState) return;
 
+    const submitBtn = document.getElementById("submit-btn");
+    const optionsContainer = document.getElementById("options-container");
+    const shortInput = document.getElementById("short-answer");
+    const answeredCorrect = !!(lastResult && lastResult.correct === true);
+
     // 상단 점수
     document.getElementById("score").textContent = currentState.score;
 
@@ -121,10 +148,11 @@ function renderAll() {
     const q = currentState.question;
     document.getElementById("question-text").textContent = q.text;
 
-    const optionsContainer = document.getElementById("options-container");
-    const shortInput = document.getElementById("short-answer");
+    // 기존 입력/보기 초기화
     optionsContainer.innerHTML = "";
     shortInput.value = "";
+    shortInput.disabled = false;
+    submitBtn.disabled = false;
 
     if (q.type === "mcq") {
         shortInput.style.display = "none";
@@ -147,6 +175,28 @@ function renderAll() {
         shortInput.style.display = "block";
     }
 
+    // 🔹 정답을 맞춘 뒤에는 입력/선택/제출 비활성화
+    if (answeredCorrect) {
+        submitBtn.disabled = true;
+        if (q.type === "mcq") {
+            optionsContainer
+                .querySelectorAll("button")
+                .forEach((b) => (b.disabled = true));
+        } else {
+            shortInput.disabled = true;
+        }
+    } else {
+        // 아직 정답을 맞추지 않은 상태 → 입력 가능
+        submitBtn.disabled = false;
+        if (q.type === "mcq") {
+            optionsContainer
+                .querySelectorAll("button")
+                .forEach((b) => (b.disabled = false));
+        } else {
+            shortInput.disabled = false;
+        }
+    }
+
     // 단서
     const clueText = document.getElementById("clue-text");
     if (currentState.clues && currentState.clues.length > 0) {
@@ -155,7 +205,7 @@ function renderAll() {
         clueText.textContent = "아직 획득한 단서가 없습니다.";
     }
 
-    // 버튼 상태
+    // 버튼 상태 (다음 문제)
     const nextBtn = document.getElementById("next-btn");
     if (lastResult && lastResult.correct && !lastResult.stageCleared) {
         nextBtn.disabled = false;
@@ -226,12 +276,21 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("back-home-btn")
         .addEventListener("click", () => showScreen("home"));
 
-    // 🔹 스테이지 시작: 조용히 리셋 후 퀴즈 화면으로, confirm 없음
+    // 🔹 스테이지 시작: 선택한 stageId로 시작
     document.getElementById("start-stage-btn")
-        .addEventListener("click", async () => {
-            await resetStageCore();
-            showScreen("quiz");
+        .addEventListener("click", async (e) => {
+            const stageId = e.currentTarget.dataset.stageId || "stage1";
+            await startStage(stageId);
         });
+
+    // 로드맵 화면에서 다른 스테이지 버튼들
+    document.querySelectorAll(".stage-select-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const stageId = btn.dataset.stageId;
+            if (!stageId) return;
+            await startStage(stageId);
+        });
+    });
 
     // 🔹 퀴즈에서 로드맵으로 나갈 때: 여기에서만 “처음부터 다시 시작” 경고
     document.getElementById("back-roadmap-from-quiz")

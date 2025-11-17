@@ -31,13 +31,30 @@
         <div class="card">
             <h1>금융사 로드맵</h1>
             <p class="stage-summary">
-                현재는 베타 스테이지(과일 스테이지)만 열려 있습니다.<br />
-                이후에는 금융사 사건(대공황, 리먼 브라더스 등)으로 확장될 예정입니다.
+                튜토리얼 스테이지부터 실제 금융사 사건까지,<br />
+                여러 스테이지를 순서대로 플레이할 수 있습니다.
             </p>
-            <button id="start-stage-btn">스테이지 1 – 과일 스테이지 시작</button>
+
+            <!-- 스테이지 리스트 -->
+            <div class="button-row" style="margin-bottom: 16px;">
+                <button id="start-stage-btn" data-stage-id="stage1">
+                    스테이지 1 – 튜토리얼(과일 스테이지)
+                </button>
+                <!--
+                <button class="ghost stage-select-btn" data-stage-id="stage2">
+                    스테이지 2 – 대공황
+                </button>
+                <button class="ghost stage-select-btn" data-stage-id="stage3">
+                    스테이지 3 – 리먼 브라더스 사태
+                </button>
+                -->
+            </div>
+
+
             <button class="ghost" id="back-home-btn">시작 화면으로 돌아가기</button>
         </div>
     </section>
+
 
     <!-- ③ 퀴즈 화면 -->
     <section id="quiz-screen" class="screen">
