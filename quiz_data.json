@@ -1,0 +1,84 @@
+{
+  "stages": {
+    "stage1": {
+      "title": "과일 스테이지",
+      "summary": "이번 스테이지의 테마는 과일이었습니다. 실제 버전에서는 금융 사건/역사 요약이 들어갈 예정입니다.",
+      "questions": [
+        {
+          "id": "q1",
+          "order": 1,
+          "type": "mcq",
+          "question": "다음 중 빨간색 과일은?",
+          "options": [
+            "바나나",
+            "사과",
+            "포도"
+          ],
+          "answer": 1,
+          "hint": "한국 사람들이 자주 먹는 과일이에요.",
+          "clue": "A",
+          "explanation": "세 과일 중 일반적으로 빨간색인 과일은 사과입니다."
+        },
+        {
+          "id": "q2",
+          "order": 2,
+          "type": "short",
+          "question": "strawberry를 한국어로 하면 무엇인가요?",
+          "answer": "딸기",
+          "hint": "빨간색이고 케이크 위에 자주 올라갑니다.",
+          "clue": "P",
+          "explanation": "strawberry는 한국어로 '딸기'입니다."
+        },
+        {
+          "id": "q3",
+          "order": 3,
+          "type": "mcq",
+          "question": "다음 중 껍질을 까서 먹는 과일은?",
+          "options": [
+            "포도",
+            "수박",
+            "귤"
+          ],
+          "answer": 2,
+          "hint": "겨울에 많이 먹는 과일입니다.",
+          "clue": "P",
+          "explanation": "여기서는 껍질을 벗겨 먹는 '귤'을 정답으로 봅니다."
+        },
+        {
+          "id": "q4",
+          "order": 4,
+          "type": "mcq",
+          "question": "다음 중 과일이 아닌 것은?",
+          "options": [
+            "사과",
+            "토마토",
+            "감자"
+          ],
+          "answer": 2,
+          "hint": "땅속에서 자랍니다.",
+          "clue": "L",
+          "explanation": "'감자'는 과일이 아니라 뿌리채소입니다."
+        },
+        {
+          "id": "q5",
+          "order": 5,
+          "type": "short",
+          "question": "banana를 한국어로 하면 무엇인가요?",
+          "answer": "바나나",
+          "hint": "노란색이고 길쭉한 과일입니다.",
+          "clue": "E",
+          "explanation": "banana는 한국어로 '바나나'입니다."
+        },
+        {
+          "id": "theme",
+          "order": 6,
+          "type": "short",
+          "question": "지금까지 모은 단서를 조합하면 어떤 단어가 될까요? (대문자로 입력)",
+          "answer": "APPLE",
+          "hint": "빨갛고 둥근 과일입니다.",
+          "explanation": "이번 스테이지의 단서를 모두 모으면 APPLE이었습니다."
+        }
+      ]
+    }
+  }
+}
