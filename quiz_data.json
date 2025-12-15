@@ -1,84 +1,808 @@
 {
-  "stages": {
-    "stage1": {
-      "title": "과일 스테이지",
-      "summary": "이번 스테이지의 테마는 과일이었습니다. 실제 버전에서는 금융 사건/역사 요약이 들어갈 예정입니다.",
-      "questions": [
-        {
-          "id": "q1",
-          "order": 1,
-          "type": "mcq",
-          "question": "다음 중 빨간색 과일은?",
-          "options": [
-            "바나나",
-            "사과",
-            "포도"
-          ],
-          "answer": 1,
-          "hint": "한국 사람들이 자주 먹는 과일이에요.",
-          "clue": "A",
-          "explanation": "세 과일 중 일반적으로 빨간색인 과일은 사과입니다."
-        },
-        {
-          "id": "q2",
-          "order": 2,
-          "type": "short",
-          "question": "strawberry를 한국어로 하면 무엇인가요?",
-          "answer": "딸기",
-          "hint": "빨간색이고 케이크 위에 자주 올라갑니다.",
-          "clue": "P",
-          "explanation": "strawberry는 한국어로 '딸기'입니다."
-        },
-        {
-          "id": "q3",
-          "order": 3,
-          "type": "mcq",
-          "question": "다음 중 껍질을 까서 먹는 과일은?",
-          "options": [
-            "포도",
-            "수박",
-            "귤"
-          ],
-          "answer": 2,
-          "hint": "겨울에 많이 먹는 과일입니다.",
-          "clue": "P",
-          "explanation": "여기서는 껍질을 벗겨 먹는 '귤'을 정답으로 봅니다."
-        },
-        {
-          "id": "q4",
-          "order": 4,
-          "type": "mcq",
-          "question": "다음 중 과일이 아닌 것은?",
-          "options": [
-            "사과",
-            "토마토",
-            "감자"
-          ],
-          "answer": 2,
-          "hint": "땅속에서 자랍니다.",
-          "clue": "L",
-          "explanation": "'감자'는 과일이 아니라 뿌리채소입니다."
-        },
-        {
-          "id": "q5",
-          "order": 5,
-          "type": "short",
-          "question": "banana를 한국어로 하면 무엇인가요?",
-          "answer": "바나나",
-          "hint": "노란색이고 길쭉한 과일입니다.",
-          "clue": "E",
-          "explanation": "banana는 한국어로 '바나나'입니다."
-        },
-        {
-          "id": "theme",
-          "order": 6,
-          "type": "short",
-          "question": "지금까지 모은 단서를 조합하면 어떤 단어가 될까요? (대문자로 입력)",
-          "answer": "APPLE",
-          "hint": "빨갛고 둥근 과일입니다.",
-          "explanation": "이번 스테이지의 단서를 모두 모으면 APPLE이었습니다."
+    "stages": {
+        "stage1": {
+            "title": "글로벌 금융사 100년 – 위기 속 돈의 흐름",
+            "summary": "• 1929년 대공황부터 코로나19 유동성 랠리까지, 100년간의 글로벌 금융사를 한 번에 살펴보는 스테이지입니다.\n• 각 사건은 ‘빚, 신뢰, 환율, 유동성, 기초체력’이 어떻게 돈의 흐름을 흔드는지를 보여줍니다.\n• 👉 교훈: 겉으로 보이는 가격이 아니라, 그 뒤에 있는 구조와 리스크를 봐야 합니다.\n",
+            "1_the_great_depression_1929": {
+                "title": "1929년 대공황",
+                "questions": [
+                    {
+                        "id": "gd_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "1929년 당시 유행했던, 자기 돈에 회사가 빌려준 돈을 더해 주식을 사는 방식을 무엇이라고 할까?",
+                        "options": [
+                            "가치 투자 (Value Investing)",
+                            "마진 거래 (Margin Trading)",
+                            "인덱스 펀드 (Index Fund)"
+                        ],
+                        "answer": 2,
+                        "hint": "적은 돈(증거금)만 맡기고 나머지는 '빌려서' 거래하는 방식이에요. '여백'이나 '가장자리'를 뜻하는 단어가 들어갑니다.",
+                        "imageUrl": "/static/images/1_the_great_depression/q1.png",
+                        "explanation": "적은 돈으로 큰돈을 굴릴 수 있는 '레버리지 효과' 때문에 빚을 내어 주식을 사는 '마진 거래'가 유행했습니다."
+                    },
+                    {
+                        "id": "gd_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "사람들이 빚(이자)까지 내면서 주식을 샀던 가장 큰 이유는?",
+                        "options": [
+                            "은행 예금 금리가 너무 낮아서",
+                            "주가가 계속 오를 것이라는 믿음 때문에",
+                            "정부가 주식 투자를 강제해서"
+                        ],
+                        "answer": 2,
+                        "hint": "당시 사람들은 '주식은 영원히 하락하지 않는다'는 낙관론에 빠져 있었어요.",
+                        "imageUrl": "/static/images/1_the_great_depression/q2.png",
+                        "explanation": "'주가는 영원히 상승한다'는 낙관론에 빠져, 이자 비용보다 주가 상승분이 훨씬 클 것이라 확신했기 때문입니다."
+                    },
+                    {
+                        "id": "gd_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "주가가 하락하기 시작하자 증권사에서 빚내서 투자한 고객에게 보낸 독촉 알림은?",
+                        "options": [
+                            "마진 콜 (Margin Call)",
+                            "모닝 콜 (Morning Call)",
+                            "해피 콜 (Happy Call)"
+                        ],
+                        "answer": 1,
+                        "hint": "담보가 부족하니 돈을 더 넣으라는 '전화(Call)'입니다. 1번 문제의 거래 방식 이름과 같아요.",
+                        "imageUrl": "/static/images/1_the_great_depression/q3.png",
+                        "explanation": "주식 가치가 떨어져 담보가 부족해지면, 증권사는 '돈을 더 넣거나 주식을 강제로 팔겠다'고 통보하는데 이를 '마진 콜'이라 합니다."
+                    },
+                    {
+                        "id": "gd_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "내 돈 1,000달러 + 빚 2,000달러로 투자했을 때, 주가가 10% 떨어지면 내 원금 손실률은?",
+                        "options": [
+                            "10%",
+                            "20%",
+                            "30%"
+                        ],
+                        "answer": 3,
+                        "hint": "총 투자금 3,000달러의 10%는 300달러입니다. 이 300달러는 내 원금(1,000달러)의 몇 퍼센트일까요?",
+                        "imageUrl": "/static/images/1_the_great_depression/q4.png",
+                        "explanation": "총액 3,000달러의 10%인 300달러가 사라집니다. 이는 내 원금 1,000달러의 30%에 해당합니다. 빚을 쓰면 손실도 3배로 커집니다."
+                    },
+                    {
+                        "id": "gd_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "1929년 주식 시장 붕괴는 실물 경제에 어떤 영향을 미쳤나?",
+                        "options": [
+                            "물가 상승과 소비 촉진",
+                            "은행 파산과 기업 도산, 대량 실업",
+                            "부동산 가격의 급격한 상승"
+                        ],
+                        "answer": 2,
+                        "hint": "돈이 사라지니 사람들은 지갑을 닫았고, 돈을 못 받은 은행들이 줄지어 문을 닫았어요.",
+                        "imageUrl": "/static/images/1_the_great_depression/q5.png",
+                        "explanation": "자산이 증발하자 사람들이 소비를 줄였고, 은행이 대출을 회수하면서 멀쩡한 기업들도 줄도산하는 악순환이 발생했습니다."
+                    }
+                ]
+            },
+            "2_bretton_woods_1944": {
+                "title": "1944년 브레튼우즈 체제",
+                "questions": [
+                    {
+                        "id": "bw_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "1944년 브레튼우즈 회의가 열린 가장 큰 목적은 무엇인가?",
+                        "options": [
+                            "제3차 세계대전 준비",
+                            "전후 통화 안정 및 무역 활성화",
+                            "금 본위제의 완전한 폐지"
+                        ],
+                        "answer": 2,
+                        "hint": "전쟁으로 망가진 세계 경제를 다시 세우고, 나라마다 제멋대로인 돈의 가치를 안정시켜서 무역을 되살리려고 모였어요.",
+                        "imageUrl": "/static/images/2_Bretton_Woods_system/q1.png",
+                        "explanation": "제2차 세계대전 이후 혼란스러운 세계 경제를 재건하고, 환율 안정을 통해 무역을 확대하기 위해 44개국 대표가 모였습니다."
+                    },
+                    {
+                        "id": "bw_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "이 회의에서 결정된 '세계 금융의 기준 통화(기축통화)'는 무엇인가?",
+                        "options": [
+                            "영국 파운드 (GBP)",
+                            "미국 달러 (USD)",
+                            "유로 (EUR)"
+                        ],
+                        "answer": 2,
+                        "hint": "당시 전 세계 금의 약 80%를 보유하고 있었고, 전쟁 피해를 입지 않아 경제력이 가장 막강했던 나라의 돈입니다.",
+                        "imageUrl": "/static/images/2_Bretton_Woods_system/q2.png",
+                        "explanation": "미국은 압도적인 금 보유량과 경제력을 바탕으로 달러를 세계 교역의 중심 통화(기축통화)로 만들었습니다."
+                    },
+                    {
+                        "id": "bw_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "미국은 달러를 신뢰하게 만들기 위해 무엇과 교환해주겠다고 약속했나?",
+                        "options": [
+                            "석유",
+                            "다이아몬드",
+                            "금"
+                        ],
+                        "answer": 3,
+                        "hint": "종이돈인 달러를 믿고 쓰게 하려면, 언제든지 '변하지 않는 가치'를 지닌 이 귀금속으로 바꿔준다는 보증(태환)이 필요했어요.",
+                        "imageUrl": "/static/images/2_Bretton_Woods_system/q3.png",
+                        "explanation": "미국은 달러 35달러를 가져오면 금 1온스로 바꿔주는 '금 태환'을 약속함으로써 달러에 신뢰를 부여했습니다."
+                    },
+                    {
+                        "id": "bw_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "브레튼우즈 체제에서 환율은 어떻게 결정되었나?",
+                        "options": [
+                            "고정 환율제 (Fixed Exchange Rate)",
+                            "변동 환율제 (Floating Exchange Rate)",
+                            "가상 화폐 연동제"
+                        ],
+                        "answer": 1,
+                        "hint": "환율이 매일 널뛰면 무역하기가 불안하겠죠? 그래서 각국 통화 가치를 달러에 딱 묶어두는 방식을 택했습니다.",
+                        "imageUrl": "/static/images/2_Bretton_Woods_system/q4.png",
+                        "explanation": "무역 안정을 위해 각국 통화 가치를 달러에 고정시키는 '고정 환율제'를 채택했습니다. (단, 예외적인 경우 조정 가능)"
+                    },
+                    {
+                        "id": "bw_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "이때 만들어진 기구로, 외환 위기에 빠진 나라에 돈을 빌려주는 곳은?",
+                        "options": [
+                            "국제통화기금 (IMF)",
+                            "세계무역기구 (WTO)",
+                            "국제연합 (UN)"
+                        ],
+                        "answer": 1,
+                        "hint": "나라의 지갑(달러)이 텅 비어 부도 위기에 처했을 때, 병원처럼 '긴급 수혈(구제금융)'을 해주는 국제 금융 기구입니다.",
+                        "imageUrl": "/static/images/2_Bretton_Woods_system/q5.png",
+                        "explanation": "국제 수지 불균형으로 달러가 부족해진 나라에 단기 자금을 빌려주어 국제 통화 질서를 유지하기 위해 IMF가 설립되었습니다."
+                    }
+                ]
+            },
+            "3_nixon_shock_1971": {
+                "title": "1971년 닉슨 쇼크",
+                "questions": [
+                    {
+                        "id": "ns_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "다른 나라들이 달러의 가치를 의심하게 된 배경은 무엇인가?",
+                        "options": [
+                            "미국이 금을 너무 많이 캐내서",
+                            "베트남 전쟁과 복지 정책으로 달러를 너무 많이 찍어내서",
+                            "유럽 경제가 미국을 앞질러서"
+                        ],
+                        "answer": 2,
+                        "hint": "미국이 전쟁도 하고 나랏돈도 많이 쓰느라 달러가 시중에 너무 많이 풀려버렸어요. 흔해지면 가치가 떨어지겠죠?",
+                        "imageUrl": "/static/images/3_Nixon_shock/q1.png",
+                        "explanation": "1960년대 베트남 전쟁 비용과 '위대한 사회' 복지 정책으로 인한 막대한 지출로 달러 공급이 과잉되자, 달러 가치 하락에 대한 우려가 커졌습니다."
+                    },
+                    {
+                        "id": "ns_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "실제로 달러를 들고 와서 금으로 바꿔달라고 요구한 나라(들)는 어디인가?",
+                        "options": [
+                            "프랑스와 영국",
+                            "일본과 한국",
+                            "중국과 러시아"
+                        ],
+                        "answer": 1,
+                        "hint": "달러를 못 믿겠다며 '약속대로 금 내놔!'라고 외친 유럽의 강대국들입니다. 특히 드골 대통령이 있던 이 나라가 앞장섰죠.",
+                        "imageUrl": "/static/images/3_Nixon_shock/q2.png",
+                        "explanation": "달러 가치 폭락을 예상한 프랑스(드골 정부)와 영국 등은 보유한 달러를 미국에 주고 금으로 교환(태환)해 달라고 요구하며 미국을 압박했습니다."
+                    },
+                    {
+                        "id": "ns_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "1971년 닉슨 대통령이 TV 연설을 통해 선언한 핵심 내용은 무엇인가?",
+                        "options": [
+                            "금 태환 정지 (Gold Window Closed)",
+                            "달러 가치 2배 인상",
+                            "새로운 화폐 발행"
+                        ],
+                        "answer": 1,
+                        "hint": "세계 경제를 뒤흔든 폭탄 선언이었죠. '이제 달러 가져와도 금으로 안 바꿔줍니다'라고 배짱을 부린 것입니다.",
+                        "imageUrl": "/static/images/3_Nixon_shock/q3.png",
+                        "explanation": "닉슨은 금 유출을 막기 위해 일방적으로 '달러의 금 태환 정지'를 선언했습니다. 이는 브레튼우즈 체제의 종말을 알리는 사건이었습니다."
+                    },
+                    {
+                        "id": "ns_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "금과의 연결이 끊어진 후, 화폐의 가치는 무엇에 의해 결정되게 되었나?",
+                        "options": [
+                            "그 나라의 금 보유량",
+                            "국가의 신용 (Fiat Money)",
+                            "가상 화폐의 가치"
+                        ],
+                        "answer": 2,
+                        "hint": "이제 돈은 금덩어리 교환권이 아니에요. 그 돈을 발행한 '나라의 경제력과 믿음' 그 자체가 가치가 된 것이죠.",
+                        "imageUrl": "/static/images/3_Nixon_shock/q4.png",
+                        "explanation": "화폐는 더 이상 실물(금)에 묶이지 않고, 해당 국가(미국)의 경제력과 신용을 바탕으로 가치가 매겨지는 '신용 화폐(Fiat Money)' 시스템으로 전환되었습니다."
+                    },
+                    {
+                        "id": "ns_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "닉슨 쇼크 이후, 세계 각국의 환율 시스템은 어떻게 바뀌어 갔나?",
+                        "options": [
+                            "고정 환율제 강화",
+                            "변동 환율제 (Floating Exchange Rate)",
+                            "물물 교환 시스템"
+                        ],
+                        "answer": 2,
+                        "hint": "달러라는 기준점이 흔들리니, 환율을 억지로 고정하지 않고 시장의 흐름(수요와 공급)에 맡겨 둥둥 떠다니게 두었습니다.",
+                        "imageUrl": "/static/images/3_Nixon_shock/q5.png",
+                        "explanation": "주요 통화들이 달러에 고정된 비율을 버리고, 외환 시장의 수요와 공급에 따라 환율이 실시간으로 변하는 '변동 환율제'로 이행하게 되었습니다."
+                    }
+                ]
+            },
+            "4_japan_bubble_burst": {
+                "title": "일본 버블 붕괴",
+                "questions": [
+                    {
+                        "id": "jb_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "당시 일본 사회를 지배했던 '절대 안 떨어진다'는 믿음은 무엇에 관한 것이었나?",
+                        "options": [
+                            "도쿄 부동산 (땅값)",
+                            "닌텐도 주식",
+                            "일본 쌀값"
+                        ],
+                        "answer": 1,
+                        "hint": "지금 눈앞에 보이는 저 화려한 빌딩들... 전부 '땅' 위에 세워진 것이지.",
+                        "imageUrl": "/static/images/4_Japan_Bubble/q1.png",
+                        "explanation": "'도쿄를 팔면 미국 전체를 살 수 있다'는 말이 나올 정도로 부동산 불패 신화가 일본 사회를 지배했습니다."
+                    },
+                    {
+                        "id": "jb_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "은행은 연봉 500만 엔인 사람에게 얼마짜리 집을 사라고 대출해 줬나?",
+                        "options": [
+                            "연봉의 5배 (2,500만 엔)",
+                            "연봉의 10배 (5,000만 엔)",
+                            "연봉의 30배 (1억 5,000만 엔)"
+                        ],
+                        "answer": 3,
+                        "hint": "연봉의 무려 30배! 정상적인 상황이라면 상상도 못 할 거액이었어.",
+                        "imageUrl": "/static/images/4_Japan_Bubble/q2.png",
+                        "explanation": "집값이 계속 오를 것이라는 믿음 때문에, 갚을 능력(연봉)을 훨씬 초과하는 비정상적인 대출(LTV 100% 이상)이 성행했습니다."
+                    },
+                    {
+                        "id": "jb_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "거품이 터진 결정적인 계기는 무엇인가?",
+                        "options": [
+                            "도쿄 올림픽의 실패",
+                            "정부의 대출 규제 (총량 규제)",
+                            "해외 여행객의 감소"
+                        ],
+                        "answer": 2,
+                        "hint": "정부가 너무 커진 거품을 걱정해서 갑자기 돈줄(대출)을 꽉 조이기 시작했어.",
+                        "imageUrl": "/static/images/4_Japan_Bubble/q3.png",
+                        "explanation": "부동산 과열을 잡기 위해 정부가 대출 총량을 제한하는 정책을 기습적으로 발표하자, 매수세가 끊기며 버블이 붕괴하기 시작했습니다."
+                    },
+                    {
+                        "id": "jb_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "집을 팔아도 빚을 다 못 갚는 주택을 가리키는 말은 무엇인가?",
+                        "options": [
+                            "깡통 주택",
+                            "황금 주택",
+                            "럭셔리 하우스"
+                        ],
+                        "answer": 1,
+                        "hint": "알맹이(내 돈/가치)는 다 사라지고 껍데기(빚)만 덩그러니 남은 상태를 비유하는 말이야.",
+                        "imageUrl": "/static/images/4_Japan_Bubble/q4.png",
+                        "explanation": "집값(담보 가치)이 대출금보다 낮아져서, 집을 팔아도 대출을 전액 상환할 수 없는 상태를 '깡통 주택'이라고 부릅니다."
+                    },
+                    {
+                        "id": "jb_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "거품 붕괴 이후 일본 경제가 겪은 10년 이상의 장기 침체기를 가리키는 말은?",
+                        "options": [
+                            "잃어버린 10년 (The Lost Decade)",
+                            "기적의 10년",
+                            "영광의 30년"
+                        ],
+                        "answer": 1,
+                        "hint": "10년이라는 긴 시간 동안 경제 성장이 멈춰버리고 제자리걸음을 한 상황을 뜻해.",
+                        "imageUrl": "/static/images/4_Japan_Bubble/q5.png",
+                        "explanation": "자산 가치 폭락과 소비 위축으로 인해 일본 경제가 1990년대 이후 장기간 저성장의 늪에 빠진 시기를 의미합니다."
+                    }
+                ]
+            },
+            "5_black_monday_1987": {
+                "title": "1987년 블랙 먼데이",
+                "questions": [
+                    {
+                        "id": "bm_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "주가가 떨어지면 자동으로 팔아서 손실을 막자는 목적으로 만들어진 전략의 이름은 무엇인가?",
+                        "options": [
+                            "포트폴리오 보험 (Portfolio Insurance)",
+                            "가치 투자 (Value Investing)",
+                            "적립식 투자 (DCA)"
+                        ],
+                        "answer": 1,
+                        "hint": "내 자산(포트폴리오)을 사고(Risk)로부터 보호해준다는 의미에서 '보험'이라는 단어가 들어가.",
+                        "imageUrl": "/static/images/5_Black_Monday/q1.png",
+                        "explanation": "주가 하락 시 컴퓨터가 자동으로 주식을 팔아 손실을 제한하도록 설계된 '포트폴리오 보험' 전략이 오히려 하락장을 가속화시켰습니다."
+                    },
+                    {
+                        "id": "bm_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "주가가 하락세로 시작하자 수많은 컴퓨터가 동시에 내린 주문은 무엇인가?",
+                        "options": [
+                            "매수 (Buy)",
+                            "매도 (Sell)",
+                            "홀딩 (Hold)"
+                        ],
+                        "answer": 2,
+                        "hint": "화면에 붉게 깜빡이는 'SELL'이라는 단어, 가지고 있는 주식을 처분한다는 뜻이지.",
+                        "imageUrl": "/static/images/5_Black_Monday/q2.png",
+                        "explanation": "프로그램들은 입력된 알고리즘에 따라 주가가 떨어지자 손실을 막기 위해 일제히 '매도(Sell)' 주문을 쏟아냈습니다."
+                    },
+                    {
+                        "id": "bm_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "기계의 매도가 주가를 더 떨어뜨리고, 다시 기계가 더 파는 현상을 무엇이라고 하는가?",
+                        "options": [
+                            "악순환 (Vicious Cycle)",
+                            "선순환 (Virtuous Cycle)",
+                            "낙수 효과 (Trickle-down effect)"
+                        ],
+                        "answer": 1,
+                        "hint": "나쁜 결과가 또 다른 나쁜 원인이 되어, 상황이 꼬리에 꼬리를 물고 계속 나빠지는 상황이야.",
+                        "imageUrl": "/static/images/5_Black_Monday/q3.png",
+                        "explanation": "매도가 주가 하락을 부르고, 하락한 주가가 다시 프로그램 매도를 부르는 '악순환'이 반복되며 시장이 붕괴했습니다."
+                    },
+                    {
+                        "id": "bm_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "이날의 폭락은 공장이나 기업이 망해서 발생한 것인가?",
+                        "options": [
+                            "아니요, 실물 경제는 튼튼했습니다.",
+                            "네, 대기업들이 줄도산했습니다.",
+                            "네, 전쟁이 발발했습니다."
+                        ],
+                        "answer": 1,
+                        "hint": "창밖을 봐. 공장은 연기를 뿜으며 잘 돌아가고 있고 세상은 평화롭잖아. 경제 자체엔 문제가 없었어.",
+                        "imageUrl": "/static/images/5_Black_Monday/q4.png",
+                        "explanation": "블랙 먼데이는 실물 경제의 위기가 아니라, 금융 시스템의 기술적 결함과 투자자들의 공포 심리가 만들어낸 사건이었습니다."
+                    },
+                    {
+                        "id": "bm_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "결국 이날의 폭락을 만든 두 가지 핵심 요인은 무엇인가?",
+                        "options": [
+                            "프로그램 매매와 공포 심리",
+                            "금리 인상과 전쟁",
+                            "유가 폭등과 인플레이션"
+                        ],
+                        "answer": 1,
+                        "hint": "하나는 감정 없는 기계들의 '자동 매매', 다른 하나는 겁에 질린 사람들의 '투매'였지.",
+                        "imageUrl": "/static/images/5_Black_Monday/q5.png",
+                        "explanation": "알고리즘에 의한 대량 매도(프로그램 매매)와 이를 보고 겁에 질린 투자자들의 투매(공포 심리)가 결합되어 사상 최악의 폭락을 만들었습니다."
+                    }
+                ]
+            },
+            "6_asian_financial_crisis_1997": {
+                "title": "1997년 아시아 외환위기",
+                "questions": [
+                    {
+                        "id": "afc_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "당시 한국 기업들이 위험을 무릅쓰고 '달러'로 빚을 낸 이유는?",
+                        "options": [
+                            "환율이 높아서",
+                            "이자가 싸서",
+                            "정부가 시켜서"
+                        ],
+                        "answer": 2,
+                        "hint": "당시 한국 은행 금리는 높았지만, 외국 돈을 빌리면 이자가 훨씬 저렴했거든.",
+                        "imageUrl": "/static/images/6_Asian_Financial_Crisis/q1.png",
+                        "explanation": "해외 금리가 국내보다 훨씬 낮았기 때문에, 기업들은 환율 변동 위험을 간과하고 이자가 싼 단기 외화 부채를 대거 끌어다 썼습니다."
+                    },
+                    {
+                        "id": "afc_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "아시아 경제 위기설이 돌자 외국인 투자자들은 어떻게 행동했나?",
+                        "options": [
+                            "투자를 늘렸다",
+                            "자금을 뺐다",
+                            "구경만 했다"
+                        ],
+                        "answer": 2,
+                        "hint": "불안감을 느낀 외국인들은 '한국도 위험해!'라며 돈을 썰물처럼 빼나가기 시작했지.",
+                        "imageUrl": "/static/images/6_Asian_Financial_Crisis/q2.png",
+                        "explanation": "동남아시아에서 시작된 경제 위기가 전이될 것을 우려한 외국인 투자자들이 한국 시장을 불신하며 투자금을 급격히 회수(자본 유출)하기 시작했습니다."
+                    },
+                    {
+                        "id": "afc_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "환율 폭등을 막기 위해 정부가 썼지만, 결국 바닥난 것은?",
+                        "options": [
+                            "원화 현찰",
+                            "금괴",
+                            "달러 (외환보유액)"
+                        ],
+                        "answer": 3,
+                        "hint": "나라의 비상금 지갑이라고 볼 수 있어. 환율을 방어하려면 시장에 '이것'을 풀어야 했지.",
+                        "imageUrl": "/static/images/6_Asian_Financial_Crisis/q3.png",
+                        "explanation": "정부는 치솟는 환율을 억지로 막기 위해 보유하고 있던 달러(외환보유액)를 시장에 풀었지만, 결국 보유고가 바닥나며 국가 부도 위기에 처했습니다."
+                    },
+                    {
+                        "id": "afc_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "환율이 2배로 폭등하자, 달러 빚을 진 기업의 상황은?",
+                        "options": [
+                            "빚이 줄었다",
+                            "변화 없다",
+                            "빚이 2배가 됐다"
+                        ],
+                        "answer": 3,
+                        "hint": "1달러를 갚으려면 예전엔 800원만 있으면 됐는데, 갑자기 1,600원을 줘야 하게 된 상황이야.",
+                        "imageUrl": "/static/images/6_Asian_Financial_Crisis/q4.png",
+                        "explanation": "원-달러 환율이 폭등하면서(원화 가치 폭락), 달러로 돈을 빌렸던 기업들이 갚아야 할 원화 금액이 감당할 수 없을 정도로 불어나 줄도산하게 되었습니다."
+                    },
+                    {
+                        "id": "afc_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "결국 국가 부도 위기에 몰린 한국은 어디에 구제금융을 요청했나?",
+                        "options": [
+                            "UN (유엔)",
+                            "FIFA (피파)",
+                            "IMF (국제통화기금)"
+                        ],
+                        "answer": 3,
+                        "hint": "국제 금융의 소방수 역할을 하는 곳이야. 당시 구조조정의 아픔 때문에 'I'm Fired(해고)'라는 슬픈 농담이 돌기도 했지.",
+                        "imageUrl": "/static/images/6_Asian_Financial_Crisis/q5.png",
+                        "explanation": "외환보유액이 고갈되어 국가 부도(모라토리엄) 직전에 몰리자, 한국 정부는 결국 국제통화기금(IMF)에 긴급 자금 지원을 요청하게 되었습니다."
+                    }
+                ]
+            },
+            "7_dotcom_bubble_2000": {
+                "title": "2000년 닷컴 버블",
+                "questions": [
+                    {
+                        "id": "db_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "2000년 당시, 회사 이름 뒤에 '이것'만 붙으면 묻지마 투자가 이어지며 주가가 폭등했다. 무엇인가?",
+                        "options": [
+                            "닷컴 (.com)",
+                            "주식회사 (Co., Ltd.)",
+                            "홀딩스 (Holdings)"
+                        ],
+                        "answer": 1,
+                        "hint": "인터넷 주소 뒤에 붙는 말이야. 칠판에 적힌 회사 이름(FUTURE_TECH.COM)을 잘 봐!",
+                        "imageUrl": "/static/images/7_Dot_com_Bubble/q1.png",
+                        "explanation": "인터넷이 세상을 바꿀 것이라는 기대감 때문에, 구체적인 사업 계획 없이 회사 이름에 '닷컴(.com)'만 붙여도 주가가 폭등하는 과열 현상이 일어났습니다."
+                    },
+                    {
+                        "id": "db_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "당시 기업들이 수십억 적자를 내면서도, '이익' 대신 내세웠던 것은 '사용자 수 급증'을 바탕으로 한 무엇이었나?",
+                        "options": [
+                            "당장 낼 세금",
+                            "미래의 성장 잠재력",
+                            "공장의 재고 물량"
+                        ],
+                        "answer": 2,
+                        "hint": "지금 당장은 돈을 못 벌어도(적자), 나중에 사용자가 모이면 대박이 날 거라는 '장밋빛 미래'를 팔았지.",
+                        "imageUrl": "/static/images/7_Dot_com_Bubble/q2.png",
+                        "explanation": "닷컴 기업들은 당장의 수익(Profit)보다는 방문자 수(Traffic)를 근거로 '미래에 엄청나게 성장할 것'이라는 잠재력을 강조하며 투자를 유치했습니다."
+                    },
+                    {
+                        "id": "db_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "닷컴 버블 당시 '인터넷 시대에 이 지표는 구식이다'라며 무시당했지만, 결국 기업 생존에 필수적인 '실제 벌어들인 돈'을 무엇이라 할까?",
+                        "options": [
+                            "부채 (Debt)",
+                            "순이익 (Net Income)",
+                            "직원 수 (Headcount)"
+                        ],
+                        "answer": 2,
+                        "hint": "회사가 물건이나 서비스를 팔아서 비용을 빼고 남긴 '진짜 돈'이야. 바닥에 떨어진 종이를 봐.",
+                        "imageUrl": "/static/images/7_Dot_com_Bubble/q3.png",
+                        "explanation": "'신경제(New Economy)'에서는 전통적인 이익 지표가 중요하지 않다고 여겨졌지만, 결국 수익(순이익)을 내지 못하는 기업은 망한다는 평범한 진리가 증명되었습니다."
+                    },
+                    {
+                        "id": "db_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "기대감이 꺼지기 시작하자, 투자자들이 기업들에게 던지기 시작한 치명적인 질문은? \"그래서 언제 OO 벌어요?\"",
+                        "options": [
+                            "친구",
+                            "돈 (수익)",
+                            "휴가"
+                        ],
+                        "answer": 2,
+                        "hint": "유명한 영화 대사 \"Show me the Money!\"가 떠오르지 않아? 투자자들의 인내심이 바닥난 거야.",
+                        "imageUrl": "/static/images/7_Dot_com_Bubble/q4.png",
+                        "explanation": "막연한 기대감으로 올랐던 주가가 흔들리자, 투자자들은 실질적인 성과, 즉 '언제 흑자를 내서 돈을 벌 수 있는지'를 따져 묻기 시작했습니다."
+                    },
+                    {
+                        "id": "db_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "2000년 3월 5,000포인트를 찍었다가 거품이 터지며 1년 만에 반토막이 난 미국의 기술주 중심 주가 지수는?",
+                        "options": [
+                            "나스닥 (NASDAQ)",
+                            "코스피 (KOSPI)",
+                            "다우 존스 (Dow Jones)"
+                        ],
+                        "answer": 1,
+                        "hint": "전광판 뒤에 있는 큰 글씨를 읽어봐. 미국의 대표적인 기술주 시장 이름이야.",
+                        "imageUrl": "/static/images/7_Dot_com_Bubble/q5.png",
+                        "explanation": "미국의 기술주 중심 시장인 나스닥(NASDAQ)은 닷컴 열풍을 타고 5,000포인트를 돌파했으나, 거품이 꺼지며 단기간에 기록적인 폭락을 겪었습니다."
+                    }
+                ]
+            },
+            "8_global_financial_crisis_2008": {
+                "title": "2008년 글로벌 금융위기",
+                "questions": [
+                    {
+                        "id": "gfc_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "2000년대 중반, 미국 은행들이 신용도가 낮은 저소득층에게도 마구잡이로 빌려줬던 '고위험 주택담보대출'을 무엇이라 부릅니까?",
+                        "options": [
+                            "프라임 모기지 (Prime Mortgage)",
+                            "서브프라임 모기지 (Subprime Mortgage)",
+                            "리버스 모기지 (Reverse Mortgage)"
+                        ],
+                        "answer": 2,
+                        "hint": "'Sub(아래)' + 'Prime(우량)'. 신용 등급이 낮은 비우량 등급을 의미합니다.",
+                        "imageUrl": "/static/images/8_Global_Financial_Crisis/q1.png",
+                        "explanation": "신용도가 낮은 사람들에게 고금리로 빌려주는 주택 담보 대출을 '서브프라임 모기지'라고 합니다. 이 부실 대출이 위기의 시작점이었습니다."
+                    },
+                    {
+                        "id": "gfc_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "은행들은 위험한 대출 채권들을 모아서 복잡하게 '이것' 하여, 전 세계에 안전한 상품(AAA 등급)인 것처럼 속여 팔았습니다. 부실 채권을 그럴듯하게 포장하는 이 행위는?",
+                        "options": [
+                            "증권화 (파생상품화)",
+                            "예금자 보호",
+                            "단순 기부"
+                        ],
+                        "answer": 1,
+                        "hint": "여러 개의 채권을 섞어서 새로운 증권(상품)으로 만드는 과정입니다.",
+                        "imageUrl": "/static/images/8_Global_Financial_Crisis/q2.png",
+                        "explanation": "은행들은 부실한 주택 대출들을 모아 CDO(부채담보부증권) 같은 복잡한 파생상품으로 '증권화'하여 위험을 숨기고 전 세계에 팔았습니다."
+                    },
+                    {
+                        "id": "gfc_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "집값이 폭락하며 금융 상품이 휴지 조각이 되자, 2008년 9월 미국의 4대 투자은행 중 하나인 '이곳'이 파산했습니다. 전 세계 금융위기의 도화선이 된 이 은행은?",
+                        "options": [
+                            "골드만삭스 (Goldman Sachs)",
+                            "JP모건 (JPMorgan)",
+                            "리먼 브라더스 (Lehman Brothers)"
+                        ],
+                        "answer": 3,
+                        "hint": "'대마불사(큰 것은 죽지 않는다)'라는 믿음을 깨고 파산한 158년 전통의 은행입니다.",
+                        "imageUrl": "/static/images/8_Global_Financial_Crisis/q3.png",
+                        "explanation": "리먼 브라더스의 파산은 전 세계 금융 시장에 엄청난 충격을 주었고, 글로벌 금융위기가 본격화되는 계기가 되었습니다."
+                    },
+                    {
+                        "id": "gfc_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "거대 은행의 파산 이후, 은행끼리 서로를 믿지 못해 돈을 빌려주지 않으면서 시장에 자금이 돌지 않고 꽉 막혀버린 현상을 무엇이라 합니까?",
+                        "options": [
+                            "인플레이션 (Inflation)",
+                            "돈맥경화 (신용경색)",
+                            "낙수효과 (Trickle-down)"
+                        ],
+                        "answer": 2,
+                        "hint": "우리 몸의 피가 통하지 않는 병(동맥경화)에 빗대어 표현한 말입니다.",
+                        "imageUrl": "/static/images/8_Global_Financial_Crisis/q4.png",
+                        "explanation": "금융기관들이 현금 확보에만 치중하고 대출을 전면 중단하면서, 경제 전체의 혈액(돈) 순환이 멈추는 '신용경색(돈맥경화)' 현상이 발생했습니다."
+                    },
+                    {
+                        "id": "gfc_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "얼어붙은 시장을 녹이기 위해, 중앙은행이 돈을 찍어내어 국채 등을 사들이는 방식으로 시중에 막대한 유동성(돈)을 직접 공급한 정책은?",
+                        "options": [
+                            "양적완화 (Quantitative Easing)",
+                            "긴축 재정 (Austerity)",
+                            "금리 인상 (Rate Hike)"
+                        ],
+                        "answer": 1,
+                        "hint": "금리 조절만으로는 부족하여, 시중에 돈의 '양(Quantity)'을 직접 늘리는 정책입니다.",
+                        "imageUrl": "/static/images/8_Global_Financial_Crisis/q5.png",
+                        "explanation": "미국 연준(Fed) 등 각국 중앙은행은 기준금리를 0%대로 낮추고, 시장에 직접 돈을 쏟아붓는 '양적완화' 정책을 통해 위기를 방어했습니다."
+                    }
+                ]
+            },
+            "9_eurozone_debt_crisis_2010_2012": {
+                "title": "2010~2012 유럽 재정위기",
+                "questions": [
+                    {
+                        "id": "ez_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "유럽 여러 나라가 '유로화'라는 같은 돈을 쓰면서도, 실제 나라의 살림(재정)은 각자 따로 관리했습니다. 이러한 '한 지붕 두 가족' 시스템이 가진 근본적인 문제점은 무엇이었습니까?",
+                        "options": [
+                            "단일 통화 정책과 개별 재정 정책의 불일치",
+                            "모든 국가가 서로 다른 화폐를 사용함",
+                            "유럽 중앙은행(ECB)의 부재"
+                        ],
+                        "answer": 1,
+                        "hint": "그리스처럼 빚이 많은 나라도 독일처럼 빚이 적은 나라와 '같은 돈'을 썼다는 점을 생각해 보세요.",
+                        "imageUrl": "/static/images/9_European_Financial_Crisis/q1.png",
+                        "explanation": "유로존은 화폐는 통합되었지만(단일 통화), 세금과 예산을 다루는 재정 정책은 각 국가가 독립적으로 운영하는 구조적 모순을 가지고 있었습니다."
+                    },
+                    {
+                        "id": "ez_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "2008년 위기 후, 투자자들은 그리스의 재정 상태를 의심하며 그리스가 발행한 ‘이것’을 사지 않으려 했습니다. 이로 인해 그리스는 돈을 빌리기 어려워졌고 위기가 심화되었는데, ‘이것’은 무엇입니까?",
+                        "options": [
+                            "주식 (Stock)",
+                            "국채 (Government Bond)",
+                            "부동산 (Real Estate)"
+                        ],
+                        "answer": 2,
+                        "hint": "국가가 돈을 빌리기 위해 발행하는 증서입니다. 투자자들이 믿지 못하면 이 증서의 가격은 떨어지고 금리는 치솟게 됩니다.",
+                        "imageUrl": "/static/images/9_European_Financial_Crisis/q2.png",
+                        "explanation": "국채는 국가가 돈을 빌릴 때 발행하는 차용증입니다. 국가 신용도가 떨어지면 국채를 아무도 사려 하지 않거나, 매우 높은 이자를 줘야만 돈을 빌릴 수 있게 됩니다."
+                    },
+                    {
+                        "id": "ez_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "그리스는 고금리 빚을 갚기 위해 더 큰 빚을 내는 상황에 빠졌습니다. 이처럼 작은 빚이 이자에 이자를 더해 감당할 수 없이 커지는 현상을 비유적으로 무엇이라 합니까?",
+                        "options": [
+                            "낙수 효과 (Trickle-down Effect)",
+                            "나비 효과 (Butterfly Effect)",
+                            "스노우볼 효과 (Snowball Effect)"
+                        ],
+                        "answer": 3,
+                        "hint": "작은 눈덩이를 굴리면 점점 커져서 나중에는 멈출 수 없는 거대한 눈덩이가 되는 것과 비슷해요.",
+                        "imageUrl": "/static/images/9_European_Financial_Crisis/q3.png",
+                        "explanation": "스노우볼 효과는 작은 눈덩이가 굴러가며 커지듯, 빚에 대한 이자가 불어나 부채 규모가 겉잡을 수 없이 커지는 현상을 의미합니다."
+                    },
+                    {
+                        "id": "ez_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "빚을 갚기 위해 빚을 냈는데, 그로 인해 이자가 늘어나고 다시 빚이 늘어나는 상황이 반복됩니다. 꼬리에 꼬리를 물고 나쁜 상황이 반복되는 것을 무엇이라 합니까?",
+                        "options": [
+                            "선순환 (Virtuous Cycle)",
+                            "악순환 (Vicious Cycle)",
+                            "유동성 함정 (Liquidity Trap)"
+                        ],
+                        "answer": 2,
+                        "hint": "빛과 이자가 서로 꼬리를 물고 끝없이 돌아가는 모습을 상상해 보세요. 뫼비우스의 띠처럼요.",
+                        "imageUrl": "/static/images/9_European_Financial_Crisis/q4.png",
+                        "explanation": "빚이 또 다른 빚을 부르는 나쁜 흐름이 반복되는 것을 '악순환'이라고 합니다. 반대로 좋은 흐름이 이어지는 것은 '선순환'입니다."
+                    },
+                    {
+                        "id": "ez_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "그리스의 위기가 유로존 전체로 퍼지자, 결국 유럽연합(EU)과 국제통화기금(IMF)이 나서서 그리스에 막대한 자금을 지원하기로 결정했습니다. 파산 위기 국가에 긴급 자금을 지원하는 것을 무엇이라 합니까?",
+                        "options": [
+                            "긴축 재정 (Austerity)",
+                            "구제 금융 (Bailout)",
+                            "헤지 펀드 (Hedge Fund)"
+                        ],
+                        "answer": 2,
+                        "hint": "물에 빠진 사람을 구하기 위해 튜브를 던져주듯, 경제적으로 위급한 상황에서 '구명'을 위해 자금을 투입하는 금융 활동을 말해요.",
+                        "imageUrl": "/static/images/9_European_Financial_Crisis/q5.png",
+                        "explanation": "구제 금융(Bailout)은 국가나 기업이 도산 위기에 처했을 때, 외부에서 자금을 지원하여 파산을 막아주는 조치를 말합니다."
+                    }
+                ]
+            },
+            "r10_covid_liquidity_rally_2020": {
+                "title": "2020 코로나19 유동성 랠리",
+                "questions": [
+                    {
+                        "id": "cv_q1",
+                        "order": 1,
+                        "type": "mcq",
+                        "question": "2020년 코로나19 팬데믹 당시, 실물 경제 침체에도 불구하고 주식, 부동산 등 자산 가격이 폭등하게 만든 핵심 요인은?",
+                        "options": [
+                            "기준 금리 인상",
+                            "막대한 유동성 공급",
+                            "엄격한 대출 규제"
+                        ],
+                        "answer": 2,
+                        "hint": "중앙은행이 수도꼭지를 틀듯이 시장에 '무언가'를 엄청나게 공급했기 때문입니다. 돈의 양을 생각해 보세요.",
+                        "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/q1.png",
+                        "explanation": "팬데믹으로 경제가 멈추자 각국 중앙은행과 정부는 경기 부양을 위해 막대한 돈(유동성)을 시장에 풀었고, 이 돈이 자산 시장으로 흘러들어가 가격 폭등을 유발했습니다."
+                    },
+                    {
+                        "id": "cv_q2",
+                        "order": 2,
+                        "type": "mcq",
+                        "question": "2020년 팬데믹 경제 위기에 대응하기 위해, 중앙은행이 자산을 매입하여 시중에 유동성을 직접 공급한 정책의 명칭은?",
+                        "options": [
+                            "양적 완화 (Quantitative Easing)",
+                            "긴축 재정 (Austerity)",
+                            "지급 준비율 인상 (Reserve Requirement Ratio Hike)"
+                        ],
+                        "answer": 1,
+                        "hint": "말 그대로 돈의 '양(Quantity)'을 늘려서 경기를 '완화(Easing)'시키는 정책입니다.",
+                        "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/q2.png",
+                        "explanation": "양적 완화(QE)는 금리 인하만으로 경기 부양 효과가 한계에 달했을 때, 중앙은행이 국채 등을 직접 매입하여 시중에 현금을 강제로 공급하는 비전통적 통화 정책입니다."
+                    },
+                    {
+                        "id": "cv_q3",
+                        "order": 3,
+                        "type": "mcq",
+                        "question": "2020년 코로나19 폭락장에서 외국인의 매도 물량을 받아내며 한국 증시를 이끈 개인 투자자들의 움직임을 일컫는 용어는?",
+                        "options": [
+                            "서학 개미 운동",
+                            "새마을 운동",
+                            "동학 개미 운동"
+                        ],
+                        "answer": 3,
+                        "hint": "과거 외세에 맞섰던 '동학 농민 운동'에 빗대어 표현한 말입니다. 개미처럼 부지런히 주식을 모았다고 해서 붙여진 이름이죠.",
+                        "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/q3.png",
+                        "explanation": "동학 개미 운동은 2020년 폭락장에서 외국인 투자자들이 주식을 팔고 떠날 때, 국내 개인 투자자(개미)들이 이를 적극적으로 매수하여 증시를 방어하고 상승시킨 현상을 말합니다."
+                    },
+                    {
+                        "id": "cv_q4",
+                        "order": 4,
+                        "type": "mcq",
+                        "question": "2020년 팬데믹 당시, 실물 경제의 침체와 금융 시장의 호황이 극명하게 엇갈리며 나타난 현상을 일컫는 경제 용어는?",
+                        "options": [
+                            "디커플링 (Decoupling)",
+                            "인플레이션 (Inflation)",
+                            "낙수 효과 (Trickle-down)"
+                        ],
+                        "answer": 1,
+                        "hint": "서로 멀어지거나, 어긋나거나, 분리된다는 의미를 가진 단어입니다. '커플'이 헤어지는 것과 반대되는 말이죠(Coupling의 반대).",
+                        "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/q4.png",
+                        "explanation": "디커플링(탈동조화)은 실물 경제와 주가 등 금융 지표가 서로 같은 방향으로 움직이지 않고 괴리가 생겨 따로 움직이는 현상을 의미합니다."
+                    },
+                    {
+                        "id": "cv_q5",
+                        "order": 5,
+                        "type": "mcq",
+                        "question": "2020년 유동성 랠리가 주는 핵심 교훈으로, 금융 시장이 실물 경제 상황보다 더 민감하게 반응할 수 있는 핵심 요인은 무엇인가?",
+                        "options": [
+                            "시장의 유동성 (Money Supply)",
+                            "기업의 영업 이익",
+                            "국가의 GDP 성장률"
+                        ],
+                        "answer": 1,
+                        "hint": "금융 시장은 현재의 '실물 경제'보다 시장에 풀린 '이것'에 더 민감하게 반응할 수 있다는 점을 명심해야 합니다.",
+                        "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/q5.png",
+                        "explanation": "2020년의 사례는 실물 경제가 바닥이어도 시장에 돈(유동성)이 넘쳐나면 자산 가격은 상승할 수 있다는 것을 보여주었습니다. 즉, 금융 시장은 유동성에 매우 민감하게 반응합니다."
+                    }
+                ]
+            }
         }
-      ]
     }
-  }
 }
