@@ -1,24 +1,100 @@
 * {
     box-sizing: border-box;
 }
+:root {
+    /* 금융 테마 네이비/골드/크림 */
+    --background: #0f1e36;
+    --foreground: #faf8f5;
+    --card: #1a2d4a;
+    --card-foreground: #faf8f5;
+    --primary: #d4a84b;
+    --primary-foreground: #0a1628;
+    --secondary: #2a4365;
+    --secondary-foreground: #faf8f5;
+    --muted: #3d5a80;
+    --muted-foreground: #ebe5d9;
+    --accent: #e5bc6a;
+    --accent-foreground: #0a1628;
+    --border: #2a4365;
+
+    --radius: 12px;
+
+    /* 추가 팔레트 (필요할 때 사용) */
+    --navy-950: #0a1628;
+    --navy-900: #0f1e36;
+    --navy-800: #1a2d4a;
+    --navy-700: #2a4365;
+    --gold-500: #d4a84b;
+    --cream-50: #faf8f5;
+    --cream-200: #ebe5d9;
+}
+
 
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "맑은 고딕", system-ui, sans-serif;
-    background-color: #f4f4f5;
-    color: #111827;
+    background: linear-gradient(180deg, var(--background) 0%, var(--navy-950) 100%);
+    color: var(--foreground);
+    min-height: 100vh;
 }
+
 
 /* 상단 바 */
 .top-bar {
-    background-color: #111827;
-    color: #f9fafb;
+    background-color: var(--navy-950);
+    color: var(--cream-50);
+    border-bottom: 1px solid var(--border);
     padding: 10px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
 }
+
+.top-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background-color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-text-symbol {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--primary-foreground);
+}
+
+.logo-text {
+    font-weight: 600;
+    color: var(--cream-50);
+}
+
+.top-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.top-score-label {
+    color: var(--muted-foreground);
+}
+
+.top-score-value {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 18px;
+}
+
 
 .top-title {
     font-weight: 600;
@@ -51,11 +127,13 @@ body {
 
 /* 카드 공통 스타일 */
 .card {
-    background: #ffffff;
+    background: var(--card);
+    color: var(--card-foreground);
     padding: 24px 28px;
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.10);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     width: 100%;
+    border: 1px solid var(--border);
 }
 
 .card h1 {
@@ -67,6 +145,7 @@ body {
     margin: 0 0 16px;
     color: #6b7280;
     font-size: 14px;
+    line-height: 1.6;
 }
 
 /* 메타 정보 */
@@ -101,24 +180,121 @@ body {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 12px;
+    line-height: 1.7;   /* 🔹 긴 문장도 읽기 편하게 */
 }
 
-/* 객관식 보기 버튼 */
+
+.quiz-image-wrapper {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 16px;
+    margin-bottom: 16px;   /* 🔹 질문 박스랑 간격 */
+}
+
+
+.quiz-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.4;
+}
+
+.overlay-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            to top,
+            var(--card) 0%,
+            rgba(26, 45, 74, 0.5) 50%,
+            transparent 100%
+    );
+}
+
+.card {
+    box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+}
+
+button.main-btn:hover {
+    opacity: 0.92;
+    box-shadow: 0 10px 25px rgba(212, 168, 75, 0.4); /* primary shadow */
+}
+
+/* ===== 아이콘 + 텍스트 버튼 공통 스타일 ===== */
+.button-row button,
+#to-theme-btn,
+#back-home-from-theme,
+#theme-global-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;              /* 아이콘과 텍스트 사이 간격 */
+}
+
+/* 버튼 안에서 아이콘 감싸는 래퍼 */
+.btn-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SVG 아이콘 크기/색 통일 */
+.btn-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;  /* 버튼 글자색 따라감 */
+    stroke-width: 2;
+    fill: none;
+}
+
+/* 텍스트 부분 */
+.btn-label {
+    line-height: 1;
+}
+
+
+/* =========================
+   객관식 보기 버튼: 통통 + 3D
+   ========================= */
 #options-container button {
-    display: block;
     width: 100%;
     text-align: left;
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background-color: #f9fafb;
-    cursor: pointer;
+
+    padding: 14px 14px;
+    margin-top: 10px;
+
+    border-radius: 14px;
+    border: 1px solid rgba(148,163,184,0.25);
+
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+
+    font-weight: 750;
+    font-size: 14px;
+
+    box-shadow: 0 10px 18px rgba(0,0,0,0.22);
+
+    transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+    will-change: transform;
 }
 
+#options-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 26px rgba(0,0,0,0.30);
+    filter: brightness(1.06);
+}
+
+#options-container button:active {
+    transform: translateY(2px);
+    box-shadow: 0 8px 14px rgba(0,0,0,0.22);
+    filter: brightness(0.98);
+}
+
+/* 선택된 보기 강조 */
 #options-container button.selected {
-    border-color: #4f46e5;
-    background-color: #eef2ff;
+    border-color: rgba(74,222,128,0.70);
+    background: rgba(74,222,128,0.10);
 }
 
 /* 주관식 입력 */
@@ -139,16 +315,24 @@ body {
 }
 
 .button-row button,
-#to-roadmap-btn,
-#start-stage-btn,
-#back-home-btn {
+#to-theme-btn,
+#back-home-from-theme,
+#theme-global-btn {
     padding: 8px 14px;
     border-radius: 999px;
     border: none;
     font-size: 13px;
     cursor: pointer;
-    background-color: #4f46e5;
-    color: #f9fafb;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+}
+
+.button-row button:hover:not(:disabled),
+#to-theme-btn:hover,
+#back-home-from-theme:hover,
+#theme-global-btn:hover {
+    filter: brightness(1.05);
 }
 
 .button-row button:disabled {
@@ -157,10 +341,15 @@ body {
 }
 
 button.ghost {
-    background-color: transparent;
-    border: 1px solid #d1d5db;
-    color: #374151;
+     background-color: transparent;
+     border: 1px solid var(--border);
+     color: var(--cream-200);
+ }
+button.ghost:hover {
+    background-color: rgba(42, 67, 101, 0.35); /* navy-700 with alpha */
 }
+
+
 
 /* 피드백 */
 .feedback {
@@ -177,27 +366,386 @@ button.ghost {
     color: #b91c1c;
 }
 
-/* 단서 박스 */
-.clue-box {
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px dashed #e5e7eb;
+/* ===== 요약 화면 ===== */
+
+.summary-card {
+    padding-top: 32px;
+    padding-bottom: 28px;
 }
 
-.clue-title {
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 4px;
+.summary-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
-.clue-text {
-    font-family: "Consolas", "Pretendard", monospace;
-    font-size: 16px;
+.summary-icon-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 20%, #ffe9b0, #d4a84b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-/* 요약 화면 */
-.final-score-text {
-    font-size: 16px;
+.summary-icon {
+    font-size: 32px;
+}
+
+.summary-title-block {
+    text-align: center;
+}
+
+#summary-stage-title {
+    font-size: 22px;
+    margin: 0 0 8px;
+}
+
+.summary-badge {
+    border: none;
+    outline: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background-color: rgba(212, 168, 75, 0.12);
+    color: var(--primary);
+    font-size: 12px;
     font-weight: 600;
-    margin-top: 8px;
 }
+
+.summary-overview {
+    background-color: rgba(15, 31, 55, 0.8);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+}
+
+.summary-overview-text {
+    margin: 0;
+}
+
+/* 가운데 점수 영역 */
+.summary-score-section {
+    text-align: center;
+    padding: 18px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.5);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.5);
+    margin-bottom: 20px;
+}
+
+.summary-score-label {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 6px;
+}
+
+.summary-score-value {
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+}
+
+.summary-score-unit {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+/* 요약 화면 버튼 정렬 */
+.summary-buttons {
+    justify-content: space-between;
+}
+
+/* 로드맵 이미지 영역 */
+.roadmap-container {
+    position: relative;
+    margin-top: 12px;
+}
+
+.roadmap-img {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+}
+
+/* 스테이지 아이콘 위 투명 버튼 */
+.stage-hotspot {
+    position: absolute;
+    width: 7%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    cursor: pointer;
+
+    /* 중심 기준으로 정렬 */
+    transform: translate(-50%, -50%);
+
+    background-color: rgba(255, 255, 255, 0); /* 실제 플레이 시 완전 투명 */
+}
+
+/* 디버깅용 (좌표 맞출 때만 잠깐 켜기) */
+/*
+.stage-hotspot {
+    background-color: rgba(255, 0, 0, 0.35);
+    outline: 2px solid red;
+}
+*/
+
+/* 퀴즈 화면에서는 상단 요약 숨기기 */
+#quiz-screen .stage-summary {
+    display: none;
+}
+
+/* =========================
+   퀴즈 화면: 풀스크린 모드
+   ========================= */
+
+/* quiz-screen만 가로폭 제한 해제 */
+#quiz-screen.screen {
+    max-width: none;         /* 기존 900px 제한 해제 */
+    width: 100%;
+}
+
+/* 카드가 화면을 꽉 채우게 */
+#quiz-screen .card {
+    width: min(1200px, 96vw);                /* 너무 과하지 않게 */
+    height: calc(100vh - 44px - 48px);       /* top-bar(44px) + main padding(24*2) 고려 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 이미지 영역을 크게 */
+#quiz-screen .quiz-image-wrapper {
+    height: clamp(260px, 40vh, 480px);       /* 화면 크기에 따라 유연하게 */
+    flex: 0 0 auto;
+}
+
+/* 이미지 더 선명하게 (원하면) */
+#quiz-screen .quiz-image {
+    object-fit: contain;
+    background: rgba(0,0,0,0.25); /* 남는 여백 보기 좋게 */
+}
+
+
+/* 질문/보기 영역이 길어지면 내부 스크롤 */
+#quiz-screen .question-block {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding-bottom: 8px;
+}
+
+#quiz-screen .card {
+    margin: 0 auto; /* ✅ 카드 가운데 */
+}
+/* =========================
+   퀴즈 이미지 블러 제거
+   ========================= */
+
+#quiz-screen .quiz-image {
+    opacity: 1 !important;        /* ✅ 흐림 제거 */
+    filter: none !important;     /* ✅ blur 제거 */
+}
+
+#quiz-screen .quiz-image-wrapper::after {
+    display: none !important;    /* ✅ 그라데이션 오버레이 제거 */
+}
+
+/* =========================
+   로드맵(사건 10개) 그리드
+   ========================= */
+.event-roadmap{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.event-card {
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    box-shadow: 0 10px 18px rgba(0,0,0,0.22);
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 30px rgba(0,0,0,0.30);
+    filter: brightness(1.04);
+}
+
+
+.event-card.locked{
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.event-card:active {
+    transform: translateY(2px);
+}
+
+.event-card.completed{
+    background: rgba(74,222,128,0.14);
+}
+
+.event-title{
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.event-meta{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    font-size: 12px;
+    color: var(--muted-foreground);
+}
+
+.event-pill{
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(148,163,184,0.25);
+}
+
+/* =========================
+   생동감 인터랙션 프리셋
+   ========================= */
+
+/* 모든 버튼에 기본 트랜지션 + 살짝 떠오름 */
+button,
+.btn,
+.button,
+a.button {
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    will-change: transform;
+}
+
+/* hover: 살짝 떠오름 + 그림자 강화 */
+button:hover,
+.btn:hover,
+.button:hover,
+a.button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.04);
+}
+
+/* active(클릭): 눌리는 느낌 */
+button:active,
+.btn:active,
+.button:active,
+a.button:active {
+    transform: translateY(1px) scale(0.99);
+    filter: brightness(0.98);
+}
+
+/* 키보드 포커스도 “반짝” */
+button:focus-visible,
+.btn:focus-visible,
+.button:focus-visible,
+a.button:focus-visible {
+    outline: 2px solid rgba(74, 222, 128, 0.7);
+    outline-offset: 2px;
+}
+
+/* =========================
+   화려하고 큰 3D 버튼 (아이콘+라벨 구조 대응)
+   ========================= */
+.btn-3d {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 14px 18px;          /* 큼직 */
+    border-radius: 16px;
+    border: 1px solid rgba(148,163,184,0.30);
+
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+
+    color: #fff;
+    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+
+    /* 3D 입체감 */
+    box-shadow:
+            0 14px 26px rgba(0,0,0,0.28),
+            0 2px 0 rgba(255,255,255,0.16) inset;
+
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    will-change: transform;
+}
+
+/* hover: 떠오르고 반짝 */
+.btn-3d:hover {
+    transform: translateY(-4px);
+    box-shadow:
+            0 20px 34px rgba(0,0,0,0.34),
+            0 2px 0 rgba(255,255,255,0.20) inset;
+    filter: brightness(1.06);
+}
+
+/* active: 눌리는 맛 */
+.btn-3d:active {
+    transform: translateY(2px) scale(0.99);
+    box-shadow:
+            0 9px 16px rgba(0,0,0,0.26),
+            0 1px 0 rgba(255,255,255,0.10) inset;
+    filter: brightness(0.98);
+}
+
+/* disabled */
+.btn-3d:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 8px 14px rgba(0,0,0,0.18);
+    filter: none;
+}
+
+/* 아이콘 */
+.btn-3d .btn-icon {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-3d .btn-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.95;
+}
+
+/* 라벨 */
+.btn-3d .btn-label {
+    line-height: 1;
+}
+
+/* 대표(정답 제출) 버튼: 화려한 그린 그라데이션 */
+.btn-3d.primary {
+    border-color: rgba(74,222,128,0.55);
+    background: linear-gradient(180deg, rgba(74,222,128,0.98), rgba(16,185,129,0.86));
+    box-shadow:
+            0 18px 30px rgba(16,185,129,0.30),
+            0 2px 0 rgba(255,255,255,0.24) inset;
+}
+
+/* ghost 버튼(보조 버튼): 윤곽 + 덜 화려한 3D */
+.btn-3d.ghost {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(148,163,184,0.22);
+    box-shadow:
+            0 12px 22px rgba(0,0,0,0.24),
+            0 1px 0 rgba(255,255,255,0.10) inset;
+}
+
