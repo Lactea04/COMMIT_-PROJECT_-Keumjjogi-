@@ -2,9 +2,50 @@
     "stages": {
         "stage1": {
             "title": "글로벌 금융사 100년 – 위기 속 돈의 흐름",
-            "summary": "• 1929년 대공황부터 코로나19 유동성 랠리까지, 100년간의 글로벌 금융사를 한 번에 살펴보는 스테이지입니다.\n• 각 사건은 ‘빚, 신뢰, 환율, 유동성, 기초체력’이 어떻게 돈의 흐름을 흔드는지를 보여줍니다.\n• 👉 교훈: 겉으로 보이는 가격이 아니라, 그 뒤에 있는 구조와 리스크를 봐야 합니다.\n",
+            "summary": "• 1929년 대공황부터 코로나19 유동성 랠리까지, 100년간의 글로벌 금융사를 한 번에 살펴보는 스테이지입니다.",
+            "intro": {
+                "slides": [
+                    {
+                        "imageUrl": "/static/images/Stage1/story1.png",
+                        "text": "..."
+                    },
+                    {
+                        "imageUrl": "/static/images/Stage1/story2.png",
+                        "text": "..."
+                    },
+                    {
+                        "imageUrl": "/static/images/Stage1/story3.png",
+                        "text": "..."
+                    },
+                    {
+                        "imageUrl": "/static/images/Stage1/story4.png",
+                        "text": "..."
+                    }
+                ]
+            },
+            "outro": {
+                "slides": [
+                    {
+                        "imageUrl": "/static/images/common/default.png",
+                        "text": "끝"
+                    }
+                ]
+            },
             "1_the_great_depression_1929": {
                 "title": "1929년 대공황",
+                "intro": {
+                    "headline": "빚으로 만든 주식 파티의 끝",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/1_the_great_depression/story1.png",
+                            "text": "..."
+                        },
+                        {
+                            "imageUrl": "/static/images/1_the_great_depression/story2.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "gd_q1",
@@ -81,10 +122,32 @@
                         "imageUrl": "/static/images/1_the_great_depression/q5.png",
                         "explanation": "자산이 증발하자 사람들이 소비를 줄였고, 은행이 대출을 회수하면서 멀쩡한 기업들도 줄도산하는 악순환이 발생했습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "교훈 & 요약",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/1_the_great_depression/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "2_bretton_woods_1944": {
                 "title": "1944년 브레튼우즈 체제",
+                "intro": {
+                    "headline": "달러가 세계의 기준이 되다",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/2_Bretton_Woods_system/story1.png",
+                            "text": "..."
+                        },
+                        {
+                            "imageUrl": "/static/images/2_Bretton_Woods_system/story2.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "bw_q1",
@@ -161,10 +224,28 @@
                         "imageUrl": "/static/images/2_Bretton_Woods_system/q5.png",
                         "explanation": "국제 수지 불균형으로 달러가 부족해진 나라에 단기 자금을 빌려주어 국제 통화 질서를 유지하기 위해 IMF가 설립되었습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "교훈 & 요약",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/2_Bretton_Woods_system/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "3_nixon_shock_1971": {
                 "title": "1971년 닉슨 쇼크",
+                "intro": {
+                    "headline": "금과의 결별, 신용 화폐의 탄생",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/3_Nixon_shock/story1.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "ns_q1",
@@ -241,10 +322,28 @@
                         "imageUrl": "/static/images/3_Nixon_shock/q5.png",
                         "explanation": "주요 통화들이 달러에 고정된 비율을 버리고, 외환 시장의 수요와 공급에 따라 환율이 실시간으로 변하는 '변동 환율제'로 이행하게 되었습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "교훈 & 요약",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/3_Nixon_shock/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "4_japan_bubble_burst": {
                 "title": "일본 버블 붕괴",
+                "intro": {
+                    "headline": "부동산 불패 신화의 배신",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/4_Japan_Bubble/story1.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "jb_q1",
@@ -321,10 +420,28 @@
                         "imageUrl": "/static/images/4_Japan_Bubble/q5.png",
                         "explanation": "자산 가치 폭락과 소비 위축으로 인해 일본 경제가 1990년대 이후 장기간 저성장의 늪에 빠진 시기를 의미합니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/4_Japan_Bubble/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "5_black_monday_1987": {
                 "title": "1987년 블랙 먼데이",
+                "intro": {
+                    "headline": "컴퓨터가 만든 공포",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/5_Black_Monday/story1.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "bm_q1",
@@ -401,10 +518,32 @@
                         "imageUrl": "/static/images/5_Black_Monday/q5.png",
                         "explanation": "알고리즘에 의한 대량 매도(프로그램 매매)와 이를 보고 겁에 질린 투자자들의 투매(공포 심리)가 결합되어 사상 최악의 폭락을 만들었습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/5_Black_Monday/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "6_asian_financial_crisis_1997": {
                 "title": "1997년 아시아 외환위기",
+                "intro": {
+                    "headline": "달러 빚의 역습",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/6_Asian_Financial_Crisis/story1.png",
+                            "text": "..."
+                        },
+                        {
+                            "imageUrl": "/static/images/6_Asian_Financial_Crisis/story2.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "afc_q1",
@@ -481,10 +620,28 @@
                         "imageUrl": "/static/images/6_Asian_Financial_Crisis/q5.png",
                         "explanation": "외환보유액이 고갈되어 국가 부도(모라토리엄) 직전에 몰리자, 한국 정부는 결국 국제통화기금(IMF)에 긴급 자금 지원을 요청하게 되었습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/6_Asian_Financial_Crisis/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "7_dotcom_bubble_2000": {
                 "title": "2000년 닷컴 버블",
+                "intro": {
+                    "headline": "묻지마 투자의 최후",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/7_Dot_com_Bubble/story1.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "db_q1",
@@ -561,10 +718,28 @@
                         "imageUrl": "/static/images/7_Dot_com_Bubble/q5.png",
                         "explanation": "미국의 기술주 중심 시장인 나스닥(NASDAQ)은 닷컴 열풍을 타고 5,000포인트를 돌파했으나, 거품이 꺼지며 단기간에 기록적인 폭락을 겪었습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/7_Dot_com_Bubble/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "8_global_financial_crisis_2008": {
                 "title": "2008년 글로벌 금융위기",
+                "intro": {
+                    "headline": "위험을 포장해서 판 죄",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/8_Global_Financial_Crisis/story1.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "gfc_q1",
@@ -641,10 +816,32 @@
                         "imageUrl": "/static/images/8_Global_Financial_Crisis/q5.png",
                         "explanation": "미국 연준(Fed) 등 각국 중앙은행은 기준금리를 0%대로 낮추고, 시장에 직접 돈을 쏟아붓는 '양적완화' 정책을 통해 위기를 방어했습니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/8_Global_Financial_Crisis/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "9_eurozone_debt_crisis_2010_2012": {
                 "title": "2010~2012 유럽 재정위기",
+                "intro": {
+                    "headline": "한 지붕, 딴 살림의 문제",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/9_European_Financial_Crisis/story1.png",
+                            "text": "..."
+                        },
+                        {
+                            "imageUrl": "/static/images/9_European_Financial_Crisis/story2.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "ez_q1",
@@ -721,10 +918,32 @@
                         "imageUrl": "/static/images/9_European_Financial_Crisis/q5.png",
                         "explanation": "구제 금융(Bailout)은 국가나 기업이 도산 위기에 처했을 때, 외부에서 자금을 지원하여 파산을 막아주는 조치를 말합니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/9_European_Financial_Crisis/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             },
             "r10_covid_liquidity_rally_2020": {
                 "title": "2020 코로나19 유동성 랠리",
+                "intro": {
+                    "headline": "실물과 금융의 괴리",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/story1.png",
+                            "text": "..."
+                        },
+                        {
+                            "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/story2.png",
+                            "text": "..."
+                        }
+                    ]
+                },
                 "questions": [
                     {
                         "id": "cv_q1",
@@ -801,7 +1020,16 @@
                         "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/q5.png",
                         "explanation": "2020년의 사례는 실물 경제가 바닥이어도 시장에 돈(유동성)이 넘쳐나면 자산 가격은 상승할 수 있다는 것을 보여주었습니다. 즉, 금융 시장은 유동성에 매우 민감하게 반응합니다."
                     }
-                ]
+                ],
+                "outro": {
+                    "headline": "요약 & 교훈",
+                    "slides": [
+                        {
+                            "imageUrl": "/static/images/10_COVID19_and_Liquidity_Rally/summary.png",
+                            "text": "..."
+                        }
+                    ]
+                }
             }
         }
     }
