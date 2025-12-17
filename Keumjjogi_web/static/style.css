@@ -1,3 +1,40 @@
+/*
+=================================================
+BUILD NOTE – style.css
+UPDATED: 2025-12-17-15:39
+
+[CHANGE SUMMARY]
+1) 글로벌 금융사 로드맵을 사진 레퍼런스 패턴으로 스타일링
+2) 퀴즈 화면 좌측에 고정된 상태 HUD 스타일 추가
+
+[DETAIL]
+
+[1] 로드맵 UI 스타일
+- roadmap-card 전용 max-width 적용
+- 이벤트 카드(event-card)를 2열 grid로 배치
+- 카드 내부를 좌/우 구조로 분리
+  · 좌: 사건 제목 + 상태/진행도 pill
+  · 우: 상태 아이콘(진행 ▶ / 잠김 🔒)
+- 기존 active / completed / locked 색상 톤 유지
+- 기존 ::after 이모지 기반 상태 표현 제거
+
+[2] 퀴즈 상태 HUD 스타일
+- #quiz-screen 기준 absolute 배치
+- 카드 왼쪽 바깥에 세로 HUD 형태
+- 고정 크기 원형 아바타
+  · 이미지 크기와 무관하게 일관된 UI 유지
+- 표정 전환/애니메이션 확장을 고려한 transition 포함
+
+[DESIGN INTENT]
+- 로드맵을 단순 리스트가 아닌
+  “선택 가능한 스테이지 카드”로 인식시키기 위함
+- 퀴즈 화면에
+  HUD(Head-Up Display) 개념 도입
+- 게임적인 몰입감과 캐릭터 상호작용 강화
+
+=================================================
+*/
+
 * {
     box-sizing: border-box;
 }
@@ -141,6 +178,118 @@ body {
     font-size: 24px;
 }
 
+/* =========================
+   HOME (시작 화면) – 카드형 랜딩 UI
+   ========================= */
+/* 홈 화면은 active일 때만 flex로 보이게 */
+#home-screen.active {
+    display: flex;
+    justify-content: center;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.home-card {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 56px 56px 52px;
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+}
+
+.home-icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 26px;
+    margin: 0 auto 22px; /* ✅ 가운데 정렬 + 아래 간격 */
+    background: linear-gradient(180deg, rgba(212,168,75,1), rgba(229,188,106,0.92));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+            0 18px 28px rgba(0,0,0,0.35),
+            0 2px 0 rgba(255,255,255,0.22) inset;
+}
+
+.home-icon svg {
+    width: 48px;
+    height: 48px;
+    fill: none;
+    stroke: rgba(10,22,40,0.92);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.home-title {
+    text-align: center;
+    margin: 0 0 10px;
+    font-size: 44px;
+    letter-spacing: -0.6px;
+}
+
+.home-desc {
+    text-align: center;
+    margin: 0 0 26px;
+    color: rgba(235,229,217,0.90);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.home-feature-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0 0 28px;
+}
+
+.feature-chip {
+    padding: 18px 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(148,163,184,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow:
+            0 12px 22px rgba(0,0,0,0.22),
+            0 1px 0 rgba(255,255,255,0.10) inset;
+}
+
+.feature-icon {
+    color: rgba(212,168,75,0.95);
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.feature-label {
+    color: rgba(250,248,245,0.92);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.home-cta {
+    width: 100%;
+    padding: 24px 18px;
+    border-radius: 18px;
+}
+
+.home-cta .btn-label {
+    line-height: 1.2;
+    font-size: 15px; /* 선택 */
+    font-weight: 800; /* 선택 */
+}
+
+
+@media (max-width: 640px) {
+    .home-card { padding: 28px 22px 22px; }
+    .home-title { font-size: 30px; }
+    .home-feature-row { grid-template-columns: 1fr; }
+}
+
+
 .stage-summary {
     margin: 0 0 16px;
     color: #6b7280;
@@ -279,7 +428,7 @@ button.main-btn:hover {
     will-change: transform;
 }
 
-#options-container button:hover {
+#options-container button:hover:not(:disabled) {
     transform: translateY(-3px);
     box-shadow: 0 16px 26px rgba(0,0,0,0.30);
     filter: brightness(1.06);
@@ -335,11 +484,6 @@ button.main-btn:hover {
     filter: brightness(1.05);
 }
 
-.button-row button:disabled {
-    opacity: 0.4;
-    cursor: default;
-}
-
 button.ghost {
      background-color: transparent;
      border: 1px solid var(--border);
@@ -356,14 +500,6 @@ button.ghost:hover {
     min-height: 40px;
     font-size: 14px;
     white-space: pre-line;
-}
-
-.feedback.correct {
-    color: #166534;
-}
-
-.feedback.wrong {
-    color: #b91c1c;
 }
 
 /* ===== 요약 화면 ===== */
@@ -740,6 +876,17 @@ a.button:focus-visible {
             0 2px 0 rgba(255,255,255,0.24) inset;
 }
 
+/* 홈 CTA용 골드 버튼 (기존 primary(그린)과 분리) */
+.btn-3d.gold {
+    border-color: rgba(212,168,75,0.62);
+    color: var(--primary-foreground);
+    background: linear-gradient(180deg, rgba(229,188,106,0.98), rgba(212,168,75,0.92));
+    box-shadow:
+            0 18px 30px rgba(212,168,75,0.22),
+            0 2px 0 rgba(255,255,255,0.22) inset;
+}
+
+
 /* ghost 버튼(보조 버튼): 윤곽 + 덜 화려한 3D */
 .btn-3d.ghost {
     background: rgba(255,255,255,0.05);
@@ -748,4 +895,1199 @@ a.button:focus-visible {
             0 12px 22px rgba(0,0,0,0.24),
             0 1px 0 rgba(255,255,255,0.10) inset;
 }
+
+/* =================================================
+   퀴즈 채점 상태 & UX 안정화 최소 패치
+   ================================================= */
+
+/* ─────────────────────────
+   1) 정답 / 오답 표시
+   ───────────────────────── */
+
+/* 정답 보기 */
+#options-container button.option-correct {
+    border-color: rgba(74, 222, 128, 0.9);
+    background: rgba(74, 222, 128, 0.18);
+}
+
+/* 오답(내가 선택한 보기) */
+#options-container button.option-wrong {
+    border-color: rgba(248, 113, 113, 0.9);
+    background: rgba(248, 113, 113, 0.16);
+}
+
+
+/* ─────────────────────────
+   2) disabled 버튼 UX 명확화
+   ───────────────────────── */
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;      /* hover 튐 방지 */
+    box-shadow: none;     /* 눌림 착시 방지 */
+}
+
+/* ─────────────────────────
+   4) 피드백(정답/오답 문구) 가독성 강화
+   ───────────────────────── */
+
+.feedback.correct {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.feedback.wrong {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+
+/* ─────────────────────────
+   5) 재시도 버튼 상태(선택)
+   JS에서 .is-retry 붙일 때 사용
+   ───────────────────────── */
+
+#submit-btn.is-retry {
+    border-color: rgba(248, 113, 113, 0.65);
+    background: linear-gradient(
+            180deg,
+            rgba(248, 113, 113, 0.95),
+            rgba(239, 68, 68, 0.82)
+    );
+}
+
+/* 스토리 화면들은 quiz-screen처럼 풀스크린 카드 느낌 */
+#stage-intro-screen .card,
+#event-intro-screen .card,
+#event-outro-screen .card,
+#stage-outro-screen .card {
+    width: min(980px, 96vw);
+    height: calc(100vh - 44px - 48px); /* top-bar + main padding 고려 */
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+}
+
+/* 스토리 이미지 영역: 너무 크거나 작지 않게 */
+#stage-intro-screen .quiz-image-wrapper,
+#event-intro-screen .quiz-image-wrapper,
+#event-outro-screen .quiz-image-wrapper,
+#stage-outro-screen .quiz-image-wrapper {
+    height: clamp(220px, 34vh, 420px);
+    flex: 0 0 auto;
+    margin-bottom: 14px;
+}
+
+/* 스토리 이미지는 꽉 채우되 잘리지 않게 */
+#stage-intro-screen .quiz-image,
+#event-intro-screen .quiz-image,
+#event-outro-screen .quiz-image,
+#stage-outro-screen .quiz-image {
+    opacity: 1;
+    filter: none;
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.22);
+}
+
+/* 스토리 본문 텍스트: 길면 내부 스크롤 */
+#stage-intro-text,
+#event-intro-text,
+#event-outro-text,
+#stage-outro-text {
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 600;
+
+    /* 카드 내부에서 길어질 때 안정적으로 */
+    flex: 1 1 auto;
+    overflow: auto;
+
+    padding: 12px 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(148,163,184,0.18);
+}
+
+/* 스토리 화면 버튼은 항상 아래에 붙게 */
+#stage-intro-screen .button-row,
+#event-intro-screen .button-row,
+#event-outro-screen .button-row,
+#stage-outro-screen .button-row {
+    margin-top: 14px;
+    flex: 0 0 auto;
+    justify-content: space-between;
+}
+
+/* 좁은 화면에서는 버튼이 자연스럽게 두 줄로 */
+@media (max-width: 520px) {
+    #stage-intro-screen .button-row,
+    #event-intro-screen .button-row,
+    #event-outro-screen .button-row,
+    #stage-outro-screen .button-row {
+        justify-content: stretch;
+    }
+
+    #stage-intro-screen .button-row .btn-3d,
+    #event-intro-screen .button-row .btn-3d,
+    #event-outro-screen .button-row .btn-3d,
+    #stage-outro-screen .button-row .btn-3d {
+        width: 100%;
+    }
+}
+
+/* 스토리 화면에서는 stage-summary(부제) 색상 통일 */
+#stage-intro-screen .stage-summary,
+#event-intro-screen .stage-summary,
+#event-outro-screen .stage-summary,
+#stage-outro-screen .stage-summary {
+    color: var(--muted-foreground);
+    margin-bottom: 10px;
+}
+
+/* quiz-screen 전용 규칙이 스토리 화면에 영향을 주지 않도록 보완
+   (quiz-screen에서만 이미지 contain/높이 규칙 적용되게 이미 id로 제한되어 있지만,
+    혹시 공통 클래스 충돌 시 스토리 화면은 위 스타일이 우선하도록 유지) */
+
+/* 공통: 카드 인터랙션 기본값(너무 튀지 않게) */
+.event-roadmap .event-card {
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease, filter 160ms ease;
+    will-change: transform, box-shadow;
+}
+
+/* -------------------------
+   LOCKED: 아직 시작 불가
+   - 시각적으로 "닫혀있음"
+   - 클릭 불가 느낌 강화
+   ------------------------- */
+.event-roadmap .event-card.locked {
+    opacity: 0.42;
+    filter: grayscale(0.55);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.event-roadmap .event-card.locked:hover {
+    /* hover해도 들리지 않게(클릭 유도 방지) */
+    transform: none;
+    box-shadow: none;
+}
+
+/* 잠김 상태 pill도 톤 다운 */
+.event-roadmap .event-card.locked .event-pill {
+    opacity: 0.75;
+}
+
+/* -------------------------
+   ACTIVE: 현재 진행 중
+   - 가장 강한 강조 (골드/글로우)
+   - 살짝 떠 있는 느낌
+   ------------------------- */
+.event-roadmap .event-card.active {
+    opacity: 1;
+    filter: none;
+    cursor: pointer;
+
+    /* 골드 테두리 + 글로우 */
+    border: 1px solid rgba(245, 158, 11, 0.55);
+    box-shadow:
+            0 0 0 1px rgba(245, 158, 11, 0.18),
+            0 10px 26px rgba(0, 0, 0, 0.38);
+    transform: translateY(-2px);
+}
+
+.event-roadmap .event-card.active:hover {
+    transform: translateY(-4px);
+    box-shadow:
+            0 0 0 1px rgba(245, 158, 11, 0.22),
+            0 16px 34px rgba(0, 0, 0, 0.48);
+}
+
+/* 진행중 pill은 더 선명하게 */
+.event-roadmap .event-card.active .event-pill {
+    border-color: rgba(245, 158, 11, 0.55);
+}
+
+/* -------------------------
+   COMPLETED: 완료됨
+   - 안정감(초록/청록 계열) + 복습 가능 느낌
+   - active보단 덜 튀지만 locked와 확실히 구분
+   ------------------------- */
+.event-roadmap .event-card.completed {
+    opacity: 0.9;
+    cursor: pointer;
+
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.event-roadmap .event-card.completed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
+}
+
+/* 완료 pill은 은은한 성공 톤 */
+.event-roadmap .event-card.completed .event-pill {
+    border-color: rgba(34, 197, 94, 0.28);
+}
+
+/* -------------------------
+   STATUS ICON (선택적 UX 강화)
+   - 카드 오른쪽 위에 상태 아이콘을 "가상 요소"로 표시
+   - HTML 수정 없이 CSS만으로 처리
+   ------------------------- */
+.event-roadmap .event-card {
+    position: relative;
+}
+
+/* 잠김: 🔒 */
+.event-roadmap .event-card.locked::after {
+    content: "🔒";
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    opacity: 0.55;
+    font-size: 16px;
+}
+
+/* 진행중: ▶ */
+.event-roadmap .event-card.active::after {
+    content: "▶";
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+/* 완료: ✔ */
+.event-roadmap .event-card.completed::after {
+    content: "✔";
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    opacity: 0.85;
+    font-size: 16px;
+}
+
+/* -------------------------
+   A11Y: 키보드 포커스(가능한 경우)
+   - 클릭 가능한 카드(active/completed)가 포커스 잡히면 테두리 강조
+   ------------------------- */
+.event-roadmap .event-card.active:focus,
+.event-roadmap .event-card.completed:focus {
+    outline: 2px solid rgba(245, 158, 11, 0.55);
+    outline-offset: 2px;
+}
+
+/* =========================
+   STORY SCREENS: IMAGE FIRST
+   - 사진을 화면 대부분 차지
+   - 텍스트 박스는 최소화
+   ========================= */
+
+/* 스토리 카드: 전체 높이 유지 */
+#stage-intro-screen .card,
+#event-intro-screen .card,
+#event-outro-screen .card,
+#stage-outro-screen .card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ✅ 사진 영역을 크게 (상한을 확 올리거나, flex로 키움) */
+#stage-intro-screen .quiz-image-wrapper,
+#event-intro-screen .quiz-image-wrapper,
+#event-outro-screen .quiz-image-wrapper,
+#stage-outro-screen .quiz-image-wrapper {
+    /* 기존: clamp(220px, 34vh, 420px) → 너무 작음 */
+    height: clamp(380px, 62vh, 780px);
+    flex: 1 1 auto;
+    margin-bottom: 10px;
+}
+
+/* ✅ 텍스트 영역을 최소화 + 내부 스크롤 */
+#stage-intro-text,
+#event-intro-text,
+#event-outro-text,
+#stage-outro-text {
+    flex: 0 0 auto;      /* 남는 공간 먹지 마 */
+    max-height: 14vh;    /* 텍스트 박스 비율 최소화 (원하면 10vh까지 줄여도 됨) */
+    overflow: auto;
+
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 10px 12px;
+}
+
+/* (선택) 텍스트가 비어있으면 박스 자체를 숨기기: ...만 보이는 경우 방지 */
+#stage-intro-text:empty,
+#event-intro-text:empty,
+#event-outro-text:empty,
+#stage-outro-text:empty {
+    display: none;
+}
+
+#stage-intro-screen .quiz-image
+ {
+    object-fit: cover; /* 꽉 채움 (대신 일부 잘릴 수 있음) */
+}
+
+/* =================================================
+   ROADMAP UX POLISH: "계속하기" vs "복습하기" 시각 구분
+   - active: 골드(현재 진행) + 더 강한 강조
+   - completed: 그린(완료/복습) + 안정적 강조
+   ================================================= */
+
+/* 카드 안의 pill(상태/진도) 가독성 살짝 올리기 */
+.event-roadmap .event-card .event-pill {
+    font-weight: 700;
+    letter-spacing: 0.1px;
+}
+
+/* ACTIVE(계속하기): 골드 글로우 + 더 선명 */
+.event-roadmap .event-card.active {
+    border: 1px solid rgba(245, 158, 11, 0.65);
+    background: linear-gradient(
+            180deg,
+            rgba(245, 158, 11, 0.14),
+            rgba(255, 255, 255, 0.06)
+    );
+    box-shadow:
+            0 0 0 1px rgba(245, 158, 11, 0.20),
+            0 16px 36px rgba(0, 0, 0, 0.46);
+}
+
+/* ACTIVE pill: "계속하기" 느낌 더 강하게 */
+.event-roadmap .event-card.active .event-pill:first-child {
+    border-color: rgba(245, 158, 11, 0.65);
+    background: rgba(245, 158, 11, 0.16);
+    color: var(--cream-50);
+}
+
+/* COMPLETED(복습하기): 초록톤 + 차분한 강조 */
+.event-roadmap .event-card.completed {
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    background: linear-gradient(
+            180deg,
+            rgba(34, 197, 94, 0.12),
+            rgba(255, 255, 255, 0.05)
+    );
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+}
+
+/* COMPLETED pill: "복습하기" 톤 */
+.event-roadmap .event-card.completed .event-pill:first-child {
+    border-color: rgba(34, 197, 94, 0.45);
+    background: rgba(34, 197, 94, 0.14);
+    color: var(--cream-50);
+}
+
+/* LOCKED는 더 '비활성'처럼 */
+.event-roadmap .event-card.locked {
+    opacity: 0.38;
+    filter: grayscale(0.7);
+}
+
+/* 상태 아이콘을 UX에 맞게 교체 (기존 :after 규칙 덮어쓰기) */
+.event-roadmap .event-card.locked::after {
+    content: "🔒";
+}
+
+.event-roadmap .event-card.active::after {
+    content: "⏵"; /* 계속하기 느낌 */
+}
+
+.event-roadmap .event-card.completed::after {
+    content: "↺"; /* 복습 느낌 */
+}
+
+/* 아이콘이 너무 튀면 살짝만 톤다운 */
+.event-roadmap .event-card::after {
+    font-size: 16px;
+    opacity: 0.85;
+}
+
+/* =================================================
+   QUIZ SCREEN BUTTON UX POLISH
+   - Primary: 정답 제출 / 다음 문제
+   - Secondary: 힌트 / 로드맵으로
+   - Reset 버튼 제거 이후 균형 보정
+   ================================================= */
+
+/* 퀴즈 화면 버튼 줄 정렬 */
+#quiz-screen .button-row {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+    justify-content: space-between;
+}
+
+/* 왼쪽: 주요 액션 묶음 */
+#quiz-screen .button-row > #submit-btn,
+#quiz-screen .button-row > #next-btn {
+    order: 1;
+}
+
+/* 오른쪽: 보조 액션 */
+#quiz-screen .button-row > #hint-btn,
+#quiz-screen .button-row > #back-roadmap-from-quiz {
+    order: 2;
+}
+
+/* 보조 버튼은 살짝 톤 다운 */
+#quiz-screen #hint-btn,
+#quiz-screen #back-roadmap-from-quiz {
+    opacity: 0.9;
+}
+
+/* 로드맵으로 버튼은 이동 성격 강조 */
+#quiz-screen #back-roadmap-from-quiz {
+    border-color: rgba(148, 163, 184, 0.45);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* hover 시에도 과하게 튀지 않게 */
+#quiz-screen #back-roadmap-from-quiz:hover {
+    filter: brightness(1.02);
+}
+
+/* 모바일에서는 버튼을 두 줄로 */
+@media (max-width: 520px) {
+    #quiz-screen .button-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #quiz-screen .button-row button {
+        width: 100%;
+    }
+}
+
+/* =========================
+   UX PATCH: SCI-FI BATTERY HUD (QUIZ)
+   - 1문제=1칸(총 5칸) 진행도 표시용
+   - 배치는 "퀴즈 이미지 오른쪽" (스크린샷 빨간 영역)
+   ========================= */
+
+/* 퀴즈 카드 기준으로 HUD를 절대 배치할 수 있게 */
+#quiz-screen .card {
+    position: relative;
+}
+
+/* HUD 전체 박스 */
+#battery-hud.battery-hud {
+    position: absolute;
+    /* ✅ 이미지 오른쪽에 붙이기 */
+    right: 26px;
+    top: 86px;                 /* top-bar/타이틀 아래로 적당히 내림 */
+    width: 120px;
+    z-index: 5;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    user-select: none;
+    pointer-events: none;      /* HUD는 클릭 요소가 아니므로 */
+}
+
+/* 이미지 영역이 HUD 때문에 안 가려지도록 오른쪽 여백 확보 */
+#quiz-screen .quiz-image-wrapper {
+    margin-right: 140px;       /* HUD 폭(120) + 여유 */
+}
+
+/* 배터리 프레임(네온) */
+#battery-hud .battery-frame {
+    width: 110px;
+    height: 320px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(148,163,184,0.35);
+    background: rgba(255,255,255,0.04);
+
+    padding: 12px;
+
+    display: flex;
+    flex-direction: column-reverse; /* ✅ 아래 칸부터 채움 */
+    gap: 8px;
+
+    /* 네온 글로우 */
+    box-shadow:
+            0 0 0 1px rgba(212,168,75,0.12),
+            0 10px 26px rgba(0,0,0,0.35),
+            0 0 22px rgba(74,222,128,0.06);
+    backdrop-filter: blur(6px);
+}
+
+/* 분절 칸(기본: 꺼짐) */
+#battery-hud .battery-seg {
+    height: 44px;
+    border-radius: 12px;
+
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(148,163,184,0.22);
+
+    box-shadow: inset 0 0 0 rgba(0,0,0,0);
+    filter: none;
+    opacity: 0.55;
+}
+
+/* 켜짐 공통(살짝 빛) */
+#battery-hud .battery-seg.is-on {
+    opacity: 1;
+}
+
+/* ─────────────────────────
+   data-level(1~5) → 몇 칸 켜기
+   (column-reverse라 nth-child(1)부터 아래칸)
+   ───────────────────────── */
+#battery-hud[data-level="1"] .battery-seg:nth-child(-n+1),
+#battery-hud[data-level="2"] .battery-seg:nth-child(-n+2),
+#battery-hud[data-level="3"] .battery-seg:nth-child(-n+3),
+#battery-hud[data-level="4"] .battery-seg:nth-child(-n+4),
+#battery-hud[data-level="5"] .battery-seg:nth-child(-n+5) {
+    opacity: 1;
+}
+
+/* 1~2단계: RED(위험/저전력) */
+#battery-hud[data-level="1"] .battery-seg:nth-child(-n+1),
+#battery-hud[data-level="2"] .battery-seg:nth-child(-n+2) {
+    background: rgba(248,113,113,0.22);
+    border-color: rgba(248,113,113,0.55);
+    box-shadow:
+            0 0 18px rgba(248,113,113,0.22),
+            0 0 6px rgba(248,113,113,0.18) inset;
+}
+
+/* 3~4단계: YELLOW(중간) */
+#battery-hud[data-level="3"] .battery-seg:nth-child(-n+3),
+#battery-hud[data-level="4"] .battery-seg:nth-child(-n+4) {
+    background: rgba(245,158,11,0.22);
+    border-color: rgba(245,158,11,0.55);
+    box-shadow:
+            0 0 18px rgba(245,158,11,0.20),
+            0 0 6px rgba(245,158,11,0.18) inset;
+}
+
+/* 5단계: BLUE(MAX POWER) */
+#battery-hud[data-level="5"] .battery-seg:nth-child(-n+5) {
+    background: rgba(59,130,246,0.24);
+    border-color: rgba(59,130,246,0.62);
+    box-shadow:
+            0 0 22px rgba(59,130,246,0.28),
+            0 0 10px rgba(59,130,246,0.22) inset;
+}
+
+/* MAX POWER 텍스트 (5단계일 때만) */
+#battery-hud[data-level="5"] .battery-frame::after {
+    position: absolute;
+    left: 50%;
+    top: -26px;                 /* ✅ 위로 올림 */
+    transform: translateX(-50%);
+
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: 0.8px;
+
+    color: rgba(147,197,253,0.95);
+    text-shadow:
+            0 0 10px rgba(59,130,246,0.55),
+            0 0 22px rgba(59,130,246,0.35);
+}
+
+/* frame을 relative로 만들어 ::after 배치 */
+#battery-hud .battery-frame {
+    position: relative;
+}
+
+/* 라벨 */
+#battery-hud .battery-label {
+    text-align: center;
+    line-height: 1.2;
+    opacity: 0.95;
+}
+
+#battery-hud .battery-title {
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    color: rgba(235,229,217,0.95);
+}
+
+#battery-hud .battery-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 800;
+    color: rgba(212,168,75,0.95);
+}
+
+/* 좁은 화면에서는 HUD를 아래로 내리고, 이미지 여백 해제 */
+@media (max-width: 780px) {
+    #battery-hud.battery-hud {
+        position: static;
+        width: auto;
+        margin: 10px 0 0;
+        pointer-events: none;
+    }
+
+    #quiz-screen .quiz-image-wrapper {
+        margin-right: 0;
+    }
+
+    #battery-hud .battery-frame {
+        width: 100%;
+        height: 140px;
+        flex-direction: row;     /* 모바일에서는 가로 배터리로 */
+    }
+
+    #battery-hud .battery-seg {
+        flex: 1 1 0;
+        height: auto;
+    }
+}
+
+#battery-hud .battery-label {
+    display: none;
+}
+
+#battery-hud.battery-hud {
+    gap: 0;
+}
+
+/* =========================
+   QUIZ 이미지 카드 배경을 흰색으로
+   ========================= */
+
+#quiz-screen .quiz-image-wrapper {
+    background: #ffffff;              /* ✅ 흰 배경 */
+    border-radius: 16px;
+    padding: 12px;                    /* 이미지와 카드 사이 여백 */
+}
+
+#quiz-screen .quiz-image {
+    background: #ffffff;
+    border-radius: 12px;
+}
+
+/* =========================
+   DEV PANEL (only when ?dev=1)
+   ========================= */
+.dev-panel{
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    width: 220px;
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    z-index: 9999;
+    font-size: 12px;
+}
+.dev-title{
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.dev-row{
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.dev-btn{
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    cursor: pointer;
+}
+.dev-btn:hover{
+    filter: brightness(1.06);
+}
+.dev-log{
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    white-space: pre-wrap;
+    min-height: 54px;
+}
+
+#home-screen .home-cta {
+    padding: 24px 18px;
+}
+
+/* =========================
+   THEME (테마 선택) – 홈과 동일 톤의 대형 카드
+   ========================= */
+#theme-screen.active {
+    display: flex;
+    justify-content: center;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+/* 테마 카드 자체 크기 확대 */
+.theme-card {
+    width: min(980px, 92vw);
+    margin: 0 auto;
+    padding: 52px 52px 44px;
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+}
+
+/* 제목/설명 비례 확대 */
+#theme-screen .theme-card h1 {
+    font-size: 34px;
+    margin-bottom: 10px;
+    letter-spacing: -0.4px;
+}
+
+#theme-screen .theme-card .stage-summary {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 22px;
+    color: rgba(235,229,217,0.90);
+}
+
+/* 테마 버튼들(칩/메인 버튼) 크기 확대 */
+#theme-screen .theme-card button {
+    font-size: 14px;
+    padding: 12px 18px;
+    border-radius: 999px;
+}
+
+/* 메인 진입 버튼(#theme-global-btn)은 더 크게 */
+#theme-global-btn {
+    padding: 14px 22px;   /* 기존 공통 8px 14px보다 큼 */
+    font-size: 14px;
+    font-weight: 750;
+}
+
+/* 뒤로가기 버튼(#back-home-from-theme)도 살짝 키우기 */
+#back-home-from-theme {
+    padding: 12px 18px;
+    font-size: 14px;
+}
+
+/* (선택) 버튼 사이 간격이 촘촘하면 살짝 벌리기 */
+#theme-screen .theme-card .button-row {
+    gap: 12px;
+}
+
+/* THEME 아이콘 배지: 홈 아이콘 스타일 재사용 + 위치만 조정 */
+.theme-icon {
+    margin: 0 0 16px;       /* 가운데가 아니라 카드 내부 좌측 배치 */
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+}
+
+.theme-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+#theme-screen .theme-card {
+    text-align: center;
+}
+
+#theme-screen .theme-card .button-row {
+    justify-content: center;
+}
+
+/* =========================
+   THEME SCREEN – LIST PATTERN
+   ========================= */
+#theme-screen .theme-card {
+    width: min(860px, 92vw);
+    padding: 34px 34px 28px;
+}
+
+#theme-screen .theme-title {
+    margin: 0 0 10px;
+    font-size: 40px;
+    letter-spacing: -0.6px;
+}
+
+#theme-screen .theme-subtitle {
+    margin: 0 0 22px;
+    color: rgba(235,229,217,0.78); /* 지금 팔레트 유지 */
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+/* 리스트 */
+.theme-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* 아이템 카드(버튼) */
+.theme-item {
+    width: 100%;
+    border: 1px solid rgba(148,163,184,0.22);
+    background: rgba(255,255,255,0.03);
+    border-radius: 18px;
+    padding: 22px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    color: rgba(250,248,245,0.94);
+    cursor: pointer;
+
+    box-shadow:
+            0 18px 28px rgba(0,0,0,0.25),
+            0 1px 0 rgba(255,255,255,0.08) inset;
+
+    transition: transform 140ms ease, filter 140ms ease, border-color 140ms ease;
+}
+
+.theme-item:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+    border-color: rgba(212,168,75,0.35);
+}
+
+.theme-item:active:not(:disabled) {
+    transform: translateY(1px);
+    filter: brightness(0.98);
+}
+
+/* 왼쪽 아이콘 박스 */
+.theme-item-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(148,163,184,0.18);
+}
+
+.theme-item-icon.active {
+    background: rgba(212,168,75,0.10);
+    border-color: rgba(212,168,75,0.22);
+}
+
+.theme-item-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: rgba(212,168,75,0.95);
+    stroke-width: 2.2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.theme-item-icon.locked svg {
+    stroke: rgba(148,163,184,0.65);
+}
+
+/* 텍스트 */
+.theme-item-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.theme-item-name {
+    font-size: 22px;
+    font-weight: 850;
+    letter-spacing: -0.2px;
+    margin-bottom: 6px;
+}
+
+.theme-item-desc {
+    font-size: 14px;
+    color: rgba(235,229,217,0.70);
+}
+
+/* 우측 아이콘 (화살표/자물쇠) */
+.theme-item-right {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    flex: 0 0 auto;
+}
+
+.theme-item-right svg {
+    width: 22px;
+    height: 22px;
+    stroke: rgba(235,229,217,0.85);
+    stroke-width: 2.4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.theme-item-right.lock svg {
+    stroke: rgba(148,163,184,0.75);
+}
+
+/* locked 상태 */
+.theme-item.locked {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.theme-item.locked .theme-item-name,
+.theme-item.locked .theme-item-desc {
+    color: rgba(235,229,217,0.55);
+}
+
+/* 하단 버튼 영역 */
+.theme-footer {
+    margin-top: 22px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+/* 활성(골드 강조) 아이콘은 선색을 어둡게 → 배경과 대비 확보 */
+.theme-item-icon.active svg {
+    stroke: rgba(10, 22, 40, 0.92);
+}
+
+/* (선택) 활성 아이콘 박스도 조금 더 또렷하게 */
+.theme-item-icon.active {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(10, 22, 40, 0.18);
+}
+
+
+/* 테마 선택용 미세 조정 */
+.theme-roadmap .event-card {
+    cursor: pointer;
+}
+
+.theme-roadmap .event-card.locked {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.theme-roadmap .event-icon {
+    margin-left: auto;
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+/* ===== ROADMAP LAYOUT (photo pattern) ===== */
+.roadmap-card {
+    max-width: 980px;   /* 사진처럼 넓게 */
+    width: min(980px, calc(100vw - 48px));
+}
+
+#roadmap-screen h1 {
+    font-size: 34px;
+    letter-spacing: -0.2px;
+}
+
+#roadmap-screen .stage-summary {
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+/* 2열 그리드 */
+.event-roadmap {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+/* 모바일: 1열 */
+@media (max-width: 720px) {
+    .event-roadmap { grid-template-columns: 1fr; }
+}
+
+/* 카드 기본 톤 */
+.event-roadmap .event-card {
+    border-radius: 16px;
+    padding: 16px 18px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+/* 카드 내부 정렬(좌 텍스트 / 우 아이콘) */
+.event-roadmap .event-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.event-roadmap .event-left { min-width: 0; }
+
+.event-roadmap .event-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+/* pill(상태/진도) */
+.event-roadmap .event-meta {
+    display: flex;
+    gap: 10px;
+}
+
+.event-roadmap .event-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 12px;
+}
+
+/* 우측 아이콘(chevron/lock) */
+.event-roadmap .event-right {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    opacity: 0.9;
+}
+
+.event-roadmap .event-right svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: rgba(226, 232, 240, 0.75);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* 잠김일 땐 아이콘 톤 다운 */
+.event-roadmap .event-card.locked .event-right {
+    opacity: 0.55;
+}
+
+/* 기존 ::after 아이콘(이모지) 쓰고 있으면 끄기 */
+.event-roadmap .event-card::after {
+    content: none !important;
+}
+
+/* =========================================
+   QUIZ STATUS PANEL (User / Partner)
+========================================= */
+
+/* 퀴즈 화면 기준 잡기 */
+#quiz-screen {
+    position: relative;
+}
+
+/* 좌측 상태 패널 */
+#quiz-screen .status-panel {
+    position: absolute;
+    left: -96px;                /* 카드 바깥으로 빼기 */
+    top: 120px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    z-index: 5;
+}
+
+/* 개별 상태 아이템 */
+.status-item {
+    width: 72px;
+    height: 72px;
+
+    border-radius: 50%;
+    padding: 4px;
+
+    background: linear-gradient(
+            145deg,
+            rgba(255, 215, 120, 0.35),
+            rgba(180, 140, 60, 0.25)
+    );
+
+    box-shadow:
+            0 0 0 2px rgba(255, 215, 120, 0.35),
+            0 8px 20px rgba(0, 0, 0, 0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 이미지 자체 */
+.status-item img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+
+    transition:
+            transform 0.25s ease,
+            filter 0.25s ease;
+}
+
+/* 유저 / 파트너 아바타 이미지 */
+#user-avatar,
+#partner-avatar {
+    width: 96px;      /* ← 여기 숫자만 키우면 됨 */
+    height: 96px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.quiz-card {
+    overflow: visible; /* 또는 제거 */
+}
+
+.status-circle span {
+    display: none;
+}
+
+.status-item {
+    width: 110px;     /* 이미지보다 살짝 크게 */
+    height: 110px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================
+   Avatar Reaction Animation
+========================= */
+
+@keyframes avatar-bounce {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.15); }
+    60%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.status-item.react {
+    animation: avatar-bounce 0.35s ease-out;
+}
+
+/* 선택: 정답/오답 시 시각적 강조 */
+.status-item.correct {
+    box-shadow: 0 0 14px rgba(80, 200, 120, 0.85);
+}
+
+.status-item.wrong {
+    box-shadow: 0 0 14px rgba(220, 80, 80, 0.85);
+}
+
+
 

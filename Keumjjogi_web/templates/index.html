@@ -1,3 +1,37 @@
+<!--
+=================================================
+BUILD NOTE – index.html
+UPDATED: 2025-12-17-16:17
+
+[CHANGE SUMMARY]
+1) 글로벌 금융사 로드맵 화면 전용 카드 스타일 분리
+2) 퀴즈 화면에 유저/파트너 상태 HUD 구조 추가
+
+[DETAIL]
+
+[1] 로드맵 UI 구조 개선
+- #roadmap-screen 내부 메인 카드에
+  class="roadmap-card" 추가
+- 로드맵 화면만 별도의 레이아웃/스타일 적용 가능
+- theme / quiz / intro 화면과 스타일 스코프 분리
+
+[2] 퀴즈 상태 HUD (User / Partner)
+- #quiz-screen 내부에 status-panel 추가
+- 유저 상태 이미지
+  · id="user-avatar"
+- 파트너 로봇 상태 이미지
+  · id="partner-avatar"
+
+[DESIGN INTENT]
+- 로드맵은 게임의 메인 허브 화면으로 강조
+- 퀴즈 중에는
+  “플레이어 + 동료 캐릭터가 함께 반응하는”
+  게임적인 연출 기반 마련
+- JS에서 상태 변경(src 교체)을 쉽게 하기 위한 ID 설계
+
+=================================================
+-->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -25,67 +59,268 @@
 
     <!-- ① 홈 화면 -->
     <section id="home-screen" class="screen active">
-        <div class="card">
-            <h1>금쪽이 금융 퀴즈</h1>
-            <p class="stage-summary">
+        <div class="card home-card">
+            <div class="home-icon" aria-hidden="true">
+                <!-- 로고 느낌(동전/체크 아이콘) - 외부 라이브러리 없이 SVG -->
+                <svg viewBox="0 0 24 24" role="img">
+                    <path d="M7 7a5 5 0 1 0 0 10" />
+                    <path d="M17 7a5 5 0 1 1 0 10" />
+                    <path d="M10 12l1.6 1.6L14.8 10.4" />
+                </svg>
+            </div>
+
+            <h1 class="home-title">금쪽이 금융 퀴즈</h1>
+            <p class="home-desc">
                 금융 지식을 스테이지 형식으로 풀어보는<br />
                 캐주얼 웹 퀴즈 게임의 베타 버전입니다.
             </p>
-            <button id="to-theme-btn">테마 선택으로 이동</button>
+
+            <div class="home-feature-row" aria-label="주요 특징">
+                <div class="feature-chip">
+                    <span class="feature-icon" aria-hidden="true">↗</span>
+                    <span class="feature-label">금융 역사</span>
+                </div>
+                <div class="feature-chip">
+                    <span class="feature-icon" aria-hidden="true">▮▮▮</span>
+                    <span class="feature-label">퀴즈 도전</span>
+                </div>
+                <div class="feature-chip">
+                    <span class="feature-icon" aria-hidden="true">◎</span>
+                    <span class="feature-label">지식 습득</span>
+                </div>
+            </div>
+
+            <!-- ✅ id 유지: 기존 JS bindClick("to-theme-btn", ...) 그대로 동작 -->
+            <button id="to-theme-btn" class="btn-3d gold home-cta">
+                <span class="btn-label">테마 선택으로 이동</span>
+            </button>
         </div>
     </section>
 
     <!-- ② 테마 선택 화면 -->
     <section id="theme-screen" class="screen">
-        <div class="card">
-            <h1>테마 선택</h1>
-            <p class="stage-summary">
+        <div class="card theme-card">
+            <h1 class="theme-title">테마 선택</h1>
+            <p class="stage-summary theme-subtitle">
                 먼저 플레이할 금융사 테마를 선택해 주세요.
             </p>
 
-            <div class="button-row" style="margin-bottom: 16px;">
-                <button id="theme-global-btn">
-                    글로벌 금융사 100년
+            <div class="theme-list">
+                <!-- ✅ 활성 테마 -->
+                <button id="theme-global-btn" class="theme-item" type="button">
+                    <div class="theme-item-icon active" aria-hidden="true">
+                        <!-- globe -->
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M3 12h18"></path>
+                            <path d="M12 3c3 3 3 15 0 18"></path>
+                            <path d="M12 3c-3 3-3 15 0 18"></path>
+                        </svg>
+                    </div>
+
+                    <div class="theme-item-text">
+                        <div class="theme-item-name">글로벌 금융사 100년</div>
+                        <div class="theme-item-desc">1929년 대공황부터 2020년 코로나까지</div>
+                    </div>
+
+                    <div class="theme-item-right" aria-hidden="true">
+                        <!-- chevron -->
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 6l6 6-6 6"></path>
+                        </svg>
+                    </div>
                 </button>
-                <button class="ghost" disabled>
-                    한국 금융사 (준비 중)
+
+                <!-- 🔒 준비중 테마 1 -->
+                <button class="theme-item locked" type="button" disabled>
+                    <div class="theme-item-icon locked" aria-hidden="true">
+                        <!-- pin -->
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 21s6-5 6-10a6 6 0 0 0-12 0c0 5 6 10 6 10z"></path>
+                            <circle cx="12" cy="11" r="2"></circle>
+                        </svg>
+                    </div>
+
+                    <div class="theme-item-text">
+                        <div class="theme-item-name">한국 금융사</div>
+                        <div class="theme-item-desc">준비 중입니다</div>
+                    </div>
+
+                    <div class="theme-item-right lock" aria-hidden="true">
+                        <!-- lock -->
+                        <svg viewBox="0 0 24 24">
+                            <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+                            <rect x="6" y="11" width="12" height="10" rx="2"></rect>
+                        </svg>
+                    </div>
                 </button>
-                <button class="ghost" disabled>
-                    코인 스페셜 스테이지 (준비 중)
+
+                <!-- 🔒 준비중 테마 2 -->
+                <button class="theme-item locked" type="button" disabled>
+                    <div class="theme-item-icon locked" aria-hidden="true">
+                        <!-- chart -->
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 19V5"></path>
+                            <path d="M4 19h16"></path>
+                            <path d="M7 15l4-4 3 3 5-7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="theme-item-text">
+                        <div class="theme-item-name">코인 스페셜 스테이지</div>
+                        <div class="theme-item-desc">준비 중입니다</div>
+                    </div>
+
+                    <div class="theme-item-right lock" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M7 11V8a5 5 0 0 1 10 0v3"></path>
+                            <rect x="6" y="11" width="12" height="10" rx="2"></rect>
+                        </svg>
+                    </div>
                 </button>
             </div>
 
-            <button class="ghost" id="back-home-from-theme">시작 화면으로 돌아가기</button>
+            <div class="theme-footer">
+                <button class="btn-3d ghost" id="back-home-from-theme" type="button">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
+        </span>
+                    <span class="btn-label">시작 화면으로 돌아가기</span>
+                </button>
+            </div>
         </div>
     </section>
 
+
     <!-- ③ 글로벌 금융사 로드맵 화면 -->
     <section id="roadmap-screen" class="screen">
-        <div class="card">
-            <h1>Global Financial History Roadmap</h1>
+        <div class="card roadmap-card">
+            <h1>글로벌 금융사 로드맵</h1>
             <p class="stage-summary">
-                1929년 대공황부터 2020년 코로나19까지,<br>
-                100년간의 글로벌 금융사를 한눈에 보는 로드맵입니다.
+                10개의 사건을 순서대로 진행해 주세요. (완료/진행중/잠김은 서버 상태 기반)
             </p>
-            <!-- ✅ 사건(10개) 로드맵: JS가 여기다 카드 10개를 그려줌 -->
+
+            <!-- ✅ main.js가 여기에 사건 카드들을 렌더링함 -->
             <div id="event-roadmap" class="event-roadmap"></div>
 
-
-            <div class="button-row" style="margin-top: 16px; gap: 8px;">
-                <!-- 🔹 여기서 바로 stage1 시작 -->
-                <button
-                        type="button"
-                        id="start-stage-btn"
-                        data-stage-id="stage1"
-                >
-                    스테이지 진입하기
+            <div class="button-row" style="margin-top: 16px;">
+                <button id="back-theme-btn" class="btn-3d ghost">
+                    <span class="btn-label">테마 선택으로</span>
                 </button>
+                <button id="roadmap-stage-outro-btn" class="btn-3d primary" style="display:none;">
+                    <span class="btn-label">아웃트로 보기</span>
+                </button>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ③ 글로벌 금융사 로드맵 화면 -->
+    <!-- ③-1 스테이지 인트로(전체 세계관 소개) -->
+    <section id="stage-intro-screen" class="screen">
+        <div class="card">
+            <h1 id="stage-intro-title">스테이지 인트로</h1>
+            <p class="stage-summary" id="stage-intro-summary"></p>
+
+            <!-- 슬라이드 이미지 -->
+            <div class="quiz-image-wrapper">
+                <img id="stage-intro-image" class="quiz-image" src="" alt="인트로 이미지" />
             </div>
 
-
+            <!-- 슬라이드 텍스트 -->
+            <div id="stage-intro-text" class="question-text">인트로 내용이 여기에 표시됩니다.</div>
 
             <div class="button-row" style="margin-top: 16px;">
-                <button class="ghost" id="back-theme-btn">테마 선택으로 돌아가기</button>
+                <button id="stage-intro-next-btn" class="btn-3d primary">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
+                    <span class="btn-label">다음</span>
+                </button>
+
+                <button id="stage-intro-skip-btn" class="btn-3d ghost">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </span>
+                    <span class="btn-label">건너뛰기</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ③-2 사건(Event) 인트로 -->
+    <section id="event-intro-screen" class="screen">
+        <div class="card">
+            <h1 id="event-intro-title">사건 인트로</h1>
+            <p class="stage-summary" id="event-intro-subtitle"></p>
+
+            <div class="quiz-image-wrapper">
+                <img id="event-intro-image" class="quiz-image" src="" alt="사건 이미지" />
+            </div>
+
+            <div id="event-intro-text" class="question-text">사건 배경이 여기에 표시됩니다.</div>
+
+            <div class="button-row" style="margin-top: 16px;">
+                <button id="event-intro-next-btn" class="btn-3d primary">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
+                    <span class="btn-label">퀴즈 시작</span>
+                </button>
+
+                <button id="event-intro-back-btn" class="btn-3d ghost">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" /></svg>
+        </span>
+                    <span class="btn-label">로드맵으로</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ④-1 사건(Event) 아웃트로 -->
+    <section id="event-outro-screen" class="screen">
+        <div class="card">
+            <h1 id="event-outro-title">사건 요약</h1>
+            <p class="stage-summary" id="event-outro-subtitle"></p>
+
+            <div class="quiz-image-wrapper">
+                <img id="event-outro-image" class="quiz-image" src="" alt="요약 이미지" />
+            </div>
+
+            <div id="event-outro-text" class="question-text">사건 교훈이 여기에 표시됩니다.</div>
+
+            <div class="button-row" style="margin-top: 16px;">
+                <button id="event-outro-next-btn" class="btn-3d primary">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
+                    <span class="btn-label">로드맵으로</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⑤-1 스테이지 아웃트로(100년 요약) -->
+    <section id="stage-outro-screen" class="screen">
+        <div class="card">
+            <h1 id="stage-outro-title">스테이지 요약</h1>
+            <p class="stage-summary" id="stage-outro-subtitle"></p>
+
+            <div class="quiz-image-wrapper">
+                <img id="stage-outro-image" class="quiz-image" src="" alt="스테이지 요약 이미지" />
+            </div>
+
+            <div id="stage-outro-text" class="question-text">스테이지 교훈이 여기에 표시됩니다.</div>
+
+            <div class="button-row" style="margin-top: 16px;">
+                <button id="stage-outro-next-btn" class="btn-3d primary">
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </span>
+                    <span class="btn-label">로드맵으로 돌아가기</span>
+                </button>
             </div>
         </div>
     </section>
@@ -93,6 +328,25 @@
     <!-- ④ 퀴즈 화면 -->
     <section id="quiz-screen" class="screen">
         <div class="card">
+            <!-- 🧠 상태 표시 패널 (유저 / 파트너) -->
+            <div class="status-panel" aria-label="유저 및 파트너 상태">
+                <!-- 유저 상태 -->
+                <div class="status-item user-status">
+                    <img
+                            id="user-avatar"
+                            src="/static/images/Status/human_normal.png"
+                    />
+                </div>
+
+                <!-- 파트너 로봇 상태 -->
+                <div class="status-item partner-status">
+                    <img
+                            id="partner-avatar"
+                            src="/static/images/Status/robot_normal.png"
+                    />
+                </div>
+            </div>
+
             <h1 id="stage-title">스테이지 제목</h1>
             <p class="stage-summary" id="stage-summary"></p>
 
@@ -110,6 +364,21 @@
                 />
             </div>
 
+            <!-- ✅ Sci-Fi Battery HUD (Progress 1~5) -->
+            <div id="battery-hud" class="battery-hud" data-level="1" aria-label="에너지 코어 진행도 1/5">
+                <div class="battery-frame" role="img" aria-hidden="true">
+                    <div class="battery-seg"></div>
+                    <div class="battery-seg"></div>
+                    <div class="battery-seg"></div>
+                    <div class="battery-seg"></div>
+                    <div class="battery-seg"></div>
+                </div>
+
+                <div class="battery-label">
+                    <div class="battery-title">ENERGY CORE</div>
+                    <div class="battery-sub">1 / 5</div>
+                </div>
+            </div>
 
             <div class="question-block">
                 <div id="question-text" class="question-text">문제가 여기 표시됩니다.</div>
@@ -119,63 +388,49 @@
 
             <div class="button-row">
                 <button id="submit-btn" class="btn-3d primary">
-    <span class="btn-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M5 12h14M13 6l6 6-6 6" />
-      </svg>
-    </span>
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
                     <span class="btn-label">정답 제출</span>
                 </button>
 
                 <button id="next-btn" class="btn-3d" disabled>
-    <span class="btn-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M5 12h14M13 6l6 6-6 6" />
-      </svg>
-    </span>
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </span>
                     <span class="btn-label">다음 문제</span>
                 </button>
 
                 <button id="hint-btn" class="btn-3d">
-    <span class="btn-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M9 9a3 3 0 0 1 6 0c0 1.657-1 2.5-1.5 3.5-.25.5-.5 1-.5 1.5h-2c0-.5-.25-1-.5-1.5C10 11.5 9 10.657 9 9Z" />
-        <path d="M10 17h4M10 20h4" />
-      </svg>
-    </span>
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 9a3 3 0 0 1 6 0c0 1.657-1 2.5-1.5 3.5-.25.5-.5 1-.5 1.5h-2c0-.5-.25-1-.5-1.5C10 11.5 9 10.657 9 9Z" />
+            <path d="M10 17h4M10 20h4" />
+          </svg>
+        </span>
                     <span class="btn-label">힌트 보기</span>
                 </button>
 
-                <button id="reset-btn" class="btn-3d ghost">
-    <span class="btn-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M4 4v6h6" />
-        <path d="M20 20v-6h-6" />
-        <path d="M5 10a7 7 0 0 1 11-4" />
-        <path d="M19 14a7 7 0 0 1-11 4" />
-      </svg>
-    </span>
-                    <span class="btn-label">스테이지 리셋</span>
-                </button>
-
                 <button id="back-roadmap-from-quiz" class="btn-3d ghost">
-    <span class="btn-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" />
-        <path d="M9 4v14M15 6v14" />
-      </svg>
-    </span>
+        <span class="btn-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" />
+            <path d="M9 4v14M15 6v14" />
+          </svg>
+        </span>
                     <span class="btn-label">로드맵으로</span>
                 </button>
             </div>
 
-
-        </div>
-
+            <!-- ✅ 피드백은 카드 안에 있어야 UX가 안정적 -->
             <div class="feedback" id="feedback"></div>
-
         </div>
     </section>
+
 
     <!-- ⑤ 스테이지 요약 화면 -->
     <section id="summary-screen" class="screen">
@@ -241,5 +496,38 @@
 </main>
 
 <script src="{{ url_for('static', filename='main.js') }}"></script>
+<!-- =========================
+     DEV PANEL (only when ?dev=1)
+     ========================= -->
+<div id="dev-panel" class="dev-panel" style="display:none;">
+    <div class="dev-title">DEV</div>
+
+    <div class="dev-row">
+        <button id="dev-toggle" class="dev-btn">패널 닫기</button>
+    </div>
+
+    <div class="dev-row">
+        <button id="dev-solve-one" class="dev-btn">현재 문제 자동해결</button>
+    </div>
+
+    <div class="dev-row">
+        <button id="dev-solve-event" class="dev-btn">현재 사건 끝까지</button>
+    </div>
+
+    <div class="dev-row">
+        <button id="dev-solve-stage" class="dev-btn">스테이지 끝까지</button>
+    </div>
+
+    <div class="dev-row">
+        <button id="dev-go-roadmap" class="dev-btn">로드맵으로</button>
+        <button id="dev-fetch" class="dev-btn">state 새로고침</button>
+        <button id="dev-reset-stage">스테이지 리셋</button>
+    </div>
+    
+    
+
+    <div class="dev-log" id="dev-log">dev=1 일 때만 표시됨</div>
+</div>
+
 </body>
 </html>

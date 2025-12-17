@@ -1,38 +1,159 @@
+/*
+=================================================
+BUILD NOTE – main.js
+UPDATED: 2025-12-17-16:52 (KST)
+
+[PATCH TITLE]
+Theme → Stage Entry Flow Unification (Always Stage Intro)
+
+[CHANGE SUMMARY]
+- 테마 선택 화면에서 스테이지로 진입할 때,
+  진행 중 여부와 관계없이 항상 stage-intro를 먼저 재생하도록
+  진입 흐름을 통일함.
+
+[BACKGROUND]
+- 기존 구조에서는:
+  · 최초 시작 시에는 stage-intro → roadmap
+  · 로드맵에서 테마로 돌아갔다가 재진입 시에는
+    진행 중 STATE를 감지하여 stage-intro를 건너뛰고
+    곧바로 roadmap으로 이동했음.
+
+- 이로 인해:
+  · 테마 진입 UX가 상황에 따라 달라지고
+  · “테마 = 세계관 진입 지점”이라는 의미가 약해지는 문제가 있었음.
+
+[DESIGN DECISION]
+- 테마 화면은 항상 “스테이지 세계관의 시작점”으로 취급한다.
+- 따라서 테마 → 스테이지 진입 시에는
+  진행 중/재진입 여부와 무관하게
+  반드시 stage-intro를 먼저 보여주도록 설계한다.
+
+[IMPLEMENTATION DETAIL]
+1) resumeOrStartStage() 수정
+   - 기존:
+     · 진행 중 STATE가 있으면 showScreen("roadmap")으로 직행
+   - 변경:
+     · 진행 중 STATE가 있어도 stage-intro payload가 존재하면
+       startStory("stageIntro")를 먼저 실행
+     · stage-intro 종료 시 기존 로직대로 roadmap으로 이동
+
+2) stage-intro payload 처리
+   - publicState에 stageIntro/intro가 존재하면 이를 우선 사용
+   - payload가 없는 예외 케이스에서는
+     기존과 동일하게 roadmap으로 fallback
+
+3) UX 일관성 확보
+   - “테마 선택 → 인트로 → 로드맵” 흐름을 단일화
+   - 진입 시마다 세계관 설명을 다시 상기시켜
+     사용자의 컨텍스트 리셋 효과 강화
+
+[RESULT]
+- 테마 화면에서 스테이지 진입 시
+  항상 동일한 흐름(stage-intro → roadmap) 유지
+- 진행 중/재진입 여부에 따른 UX 분기 제거
+- 로드맵은 순수한 ‘플레이 허브 화면’ 역할로 정리됨
+
+[DESIGN INTENT]
+- Theme Screen = World Entry Point
+- Stage Intro = Narrative Reset
+- Roadmap = Session Hub
+=================================================
+*/
+
+
 // main.js
 let currentState = null;
 let lastResult = null;
 let lastSelectedIndex = null;   // 마지막에 내가 고른 보기 인덱스
 let isRetryMode = false;        // 🔹 오답 후 재시도 모드인지 여부
+let pendingState = null;        // 정답 제출 후 "다음 문제 상태" 임시 보관
+let frozenQuestionState = null; // 정답 제출 직후 화면에 남겨둘 "현재 문제 상태"
+let postClearTransition = null; // ✅ 마지막 정답 후 "요약 보기"로 넘길 전환 정보
+let reviewReturnEventKey = null;  // ✅ 복습(완료 이벤트) 진입 시, 돌아갈 '원래 진행 이벤트' 키 저장
+let pendingStageOutro = null; // { payload, ui } // ✅ 스테이지 클리어 후, 로드맵에서 '아웃트로 보기'로 트리거하기 위한 대기값
+let userAvatar = null;
+let partnerAvatar = null;
+
+
 
 // ========================
 // 로드맵: 사건(10개) 정의
 // ========================
 const EVENTS = [
-    { key: "the_great_depression_1929", title: "1929 대공황" },
-    { key: "bretton_woods_1944", title: "1944 브레튼우즈 체제" },
-    { key: "nixon_shock_1971", title: "1971 닉슨 쇼크" },
-    { key: "japan_bubble_burst", title: "일본 버블 붕괴" },
-    { key: "black_monday_1987", title: "1987 블랙 먼데이" },
-    { key: "asian_financial_crisis_1997", title: "1997 아시아 외환위기" },
-    { key: "dotcom_bubble_2000", title: "2000 닷컴 버블" },
-    { key: "global_financial_crisis_2008", title: "2008 글로벌 금융위기" },
-    { key: "eurozone_debt_crisis_2010_2012", title: "유럽 재정위기" },
-    { key: "covid_liquidity_rally_2020", title: "2020 코로나 유동성 랠리" },
+    { key: "1_the_great_depression_1929", title: "1929 대공황" },
+    { key: "2_bretton_woods_1944", title: "1944 브레튼우즈 체제" },
+    { key: "3_nixon_shock_1971", title: "1971 닉슨 쇼크" },
+    { key: "4_japan_bubble_burst", title: "일본 버블 붕괴" },
+    { key: "5_black_monday_1987", title: "1987 블랙 먼데이" },
+    { key: "6_asian_financial_crisis_1997", title: "1997 아시아 외환위기" },
+    { key: "7_dotcom_bubble_2000", title: "2000 닷컴 버블" },
+    { key: "8_global_financial_crisis_2008", title: "2008 글로벌 금융위기" },
+    { key: "9_eurozone_debt_crisis_2010_2012", title: "유럽 재정위기" },
+    { key: "r10_covid_liquidity_rally_2020", title: "2020 코로나 유동성 랠리" },
 ];
 
-function getEventStatus(eventIdx, currentIndex) {
-    const start = eventIdx * 5;
-    const end = start + 5;
+const DEV_TOUCHED_KEY = "devTouched";
 
-    if (currentIndex >= end) return "completed";
-    if (currentIndex >= start) return "active";
+function isCleared(clearedMap, key) {
+    if (!key || !clearedMap) return false;
+    if (clearedMap instanceof Map) return clearedMap.get(key) === true;
+    return !!clearedMap[key]; // object fallback
+}
+
+function getEventStatus(index, state, clearedMap) {
+    const key = EVENTS[index]?.key;
+    if (!key) return "locked";
+
+    const stageCleared = !!(state?.stageCleared || state?.stage_cleared);
+
+    // 다음으로 풀어야 할 이벤트
+    const nextIdx = EVENTS.findIndex(ev => !isCleared(clearedMap, ev.key));
+
+    // 다 클리어된 경우
+    // 다 클리어된 경우
+    if (nextIdx === -1) {
+        // 이벤트가 전부 cleared라면 stageCleared 플래그가 없어도 복습 가능하게
+        return "completed";
+    }
+
+
+    if (index < nextIdx) return "completed";
+    if (index === nextIdx) return "active";
     return "locked";
 }
 
-function getEventProgress(eventIdx, currentIndex) {
+function getEventProgress(eventIdx, state, clearedMap) {
+    const evKey = EVENTS[eventIdx]?.key;
+
+    if (evKey) {
+        // 이미 클리어면 5/5
+        if (isCleared(clearedMap, evKey)) return 5;
+
+        // 현재 진행 중 이벤트면 eventIndex + 1
+        const curKey =
+            state?.currentEvent?.eventKey ||
+            state?.event?.eventKey ||
+            state?.currentEventKey ||
+            null;
+
+        if (curKey && curKey === evKey) {
+            const idx = Number(
+                state?.currentEvent?.eventIndex ??
+                state?.event?.eventIndex ??
+                0
+            );
+            return Math.max(1, Math.min(5, idx + 1));
+        }
+
+        // 나머지는 0/5
+        return 0;
+    }
+
+    // fallback
+    const currentIndex = Number(state?.currentIndex ?? 0);
     const start = eventIdx * 5;
-    const inEvent = currentIndex - start; // 0~4면 해당 사건 진행중
-    return Math.max(0, Math.min(5, inEvent + 1)); // 표시용 1~5 느낌
+    const inEvent = currentIndex - start;
+    return Math.max(0, Math.min(5, inEvent + 1));
 }
 
 function renderEventRoadmap() {
@@ -48,41 +169,109 @@ function renderEventRoadmap() {
         return;
     }
 
-    const idx = Number(currentState.currentIndex ?? 0);
+    const clearedMap = getClearedMapFromState(currentState);
 
     container.innerHTML = "";
     EVENTS.forEach((ev, i) => {
-        const status = getEventStatus(i, idx);
-
-        // 진행도 표시(사건당 5문제)
-        const prog = status === "locked" ? 0 : Math.min(5, Math.max(0, idx - i * 5) + 1);
+        const status = getEventStatus(i, currentState, clearedMap);
+        const prog = getEventProgress(i, currentState, clearedMap);
 
         const card = document.createElement("div");
         card.className = `event-card ${status}`;
 
         const statusLabel =
-            status === "locked" ? "잠김" : status === "active" ? "진행중" : "완료";
+            status === "locked"
+                ? "잠김"
+                : status === "active"
+                    ? "계속하기"
+                    : "복습하기";
+
+
+        const rightIcon =
+            status === "locked"
+                ? `<svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"></path><rect x="6" y="11" width="12" height="10" rx="2"></rect></svg>`
+                : `<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>`;
 
         card.innerHTML = `
+  <div class="event-row">
+    <div class="event-left">
       <div class="event-title">${ev.title}</div>
       <div class="event-meta">
         <span class="event-pill">${statusLabel}</span>
         <span class="event-pill">${prog} / 5</span>
       </div>
-    `;
+    </div>
 
-        // ✅ 지금 단계에서는 "잠김"이 아닌 카드 클릭 시 안내만
-        // (원하면 다음 단계에서 "해당 사건부터 시작" 기능으로 확장)
+    <div class="event-right" aria-hidden="true">
+      ${rightIcon}
+    </div>
+  </div>
+`;
+
+
+        // ✅ 클릭 정책:
+        // - 완료/진행중은 이벤트 시작 가능
+        // - 잠김은 클릭 막기
         if (status !== "locked") {
-            card.addEventListener("click", () => {
-                alert(`${ev.title} 구간이야!\n(다음 단계에서: 이 사건부터 시작 기능도 붙일 수 있어)`);
+            card.addEventListener("click", async () => {
+
+                // 🟡 1. 진행 중 사건 → 계속하기
+                if (status === "active") {
+                    // ✅ 진행 중 사건은 서버 start_event를 다시 호출하면 진행도가 초기화될 수 있으니 호출 금지
+                    // 대신 "현재 상태에 들어있는 event intro"만 먼저 보여준다.
+                    const eventTitle =
+                        currentState?.currentEvent?.title ||
+                        currentState?.event?.eventTitle ||
+                        ev.title ||
+                        "사건";
+
+                    const introPayload =
+                        currentState?.currentEvent?.intro ||
+                        currentState?.eventIntro ||
+                        null;
+
+                    if (introPayload) {
+                        startStory(
+                            "eventIntro",
+                            "event-intro",
+                            "event-intro",
+                            introPayload,
+                            { title: eventTitle, subtitle: "사건 배경" }
+                        );
+                    } else {
+                        // 인트로가 없으면 기존처럼 바로 퀴즈
+                        showScreen("quiz");
+                        renderAll();
+                    }
+                    return;
+                }
+
+
+                // 🟢 2. 완료된 사건 → 복습하기
+                if (status === "completed") {
+                    // ✅ 복습 들어가기 전, 원래 진행해야 할 다음 이벤트 키 저장
+                    reviewReturnEventKey = getNextUnclearedEventKey(currentState);
+
+                    await startEvent(ev.key);
+                    return;
+                }
             });
         }
 
+
+
         container.appendChild(card);
     });
+    updateStageOutroButton();
 }
 
+function updateStageOutroButton() {
+    const btn = document.getElementById("roadmap-stage-outro-btn");
+    if (!btn) return;
+
+    // pendingStageOutro가 있으면 보여주고, 없으면 숨김
+    btn.style.display = pendingStageOutro ? "inline-flex" : "none";
+}
 
 // ------------------------
 //  화면 전환
@@ -100,17 +289,295 @@ function showScreen(name) {
     }
 }
 
+// ========================
+//  스토리(인트로/아웃트로) 슬라이드 엔진
+// ========================
+
+// 현재 재생 중인 스토리 상태
+let story = {
+    type: null,          // "stageIntro" | "eventIntro" | "eventOutro" | "stageOutro"
+    slides: [],
+    idx: 0,
+};
+
+// intro/outro 데이터가 어떤 형태로 와도 slides 배열로 정규화
+function normalizeSlides(payload) {
+    if (!payload) return [];
+
+    // 1) 이미 배열이면 그대로
+    if (Array.isArray(payload)) {
+        return payload.map((s) => ({
+            text: s.text ?? s.content ?? "",
+            imageUrl: s.imageUrl ?? s.img ?? s.image ?? "",
+            title: s.title ?? "",
+        }));
+    }
+
+    // 2) { slides: [...] } 형태
+    if (payload.slides && Array.isArray(payload.slides)) {
+        return payload.slides.map((s) => ({
+            text: s.text ?? s.content ?? "",
+            imageUrl: s.imageUrl ?? s.img ?? s.image ?? "",
+            title: s.title ?? "",
+        }));
+    }
+
+    // 3) 문자열 하나면 텍스트로 취급
+    if (typeof payload === "string") {
+        return [{ text: payload, imageUrl: "" }];
+    }
+
+    // 4) { text, imageUrl } 단일 객체
+    if (typeof payload === "object") {
+        return [{
+            text: payload.text ?? payload.content ?? "",
+            imageUrl: payload.imageUrl ?? payload.img ?? payload.image ?? "",
+            title: payload.title ?? "",
+        }];
+    }
+}
+
+// 특정 스토리 화면 렌더
+function renderStoryScreen(prefix, slides, idx) {
+    const titleEl = document.getElementById(`${prefix}-title`);
+    const subEl   = document.getElementById(`${prefix}-summary`) || document.getElementById(`${prefix}-subtitle`);
+    const textEl  = document.getElementById(`${prefix}-text`);
+    const imgEl   = document.getElementById(`${prefix}-image`);
+
+    const slide = slides[idx] || { text: "", imageUrl: "", title: "" };
+
+    // 타이틀/서브타이틀은 상황별로 main.js에서 세팅할 거라 여기선 안전 처리만
+    if (textEl) textEl.textContent = slide.text ?? "";
+
+    if (imgEl) {
+        if (slide.imageUrl) {
+            imgEl.src = slide.imageUrl;
+            imgEl.style.display = "block";
+        } else {
+            imgEl.removeAttribute("src");
+            imgEl.style.display = "none";
+        }
+    }
+
+    // 진행감(선택): subtitle이 있으면 "n / total" 정도 보이게
+    if (subEl) {
+        const n = idx + 1;
+        const total = slides.length || 1;
+        // 기존 텍스트가 있으면 뒤에 진행도만 덧붙이는 느낌
+        const base = subEl.dataset.baseText ?? subEl.textContent ?? "";
+        subEl.dataset.baseText = base;
+        subEl.textContent = base ? `${base}  ·  ${n}/${total}` : `${n}/${total}`;
+    }
+}
+
+// 스토리 시작
+function startStory(type, screenName, prefix, payload, { title = "", subtitle = "" } = {}) {
+    const slides = normalizeSlides(payload);
+    story = { type, slides: slides.length ? slides : [{ text: "", imageUrl: "" }], idx: 0 };
+
+    // 타이틀/서브타이틀 세팅
+    const titleEl = document.getElementById(`${prefix}-title`);
+    const subEl   = document.getElementById(`${prefix}-summary`) || document.getElementById(`${prefix}-subtitle`);
+    if (titleEl) titleEl.textContent = title || titleEl.textContent;
+    if (subEl) {
+        subEl.textContent = subtitle || "";
+        subEl.dataset.baseText = subtitle || "";
+    }
+
+    renderStoryScreen(prefix, story.slides, story.idx);
+    updateStoryNextButton(prefix);
+    showScreen(screenName);
+}
+
+// 다음 슬라이드
+function nextStory(prefix) {
+    if (!story.slides.length) return true;
+    story.idx += 1;
+
+    if (story.idx >= story.slides.length) {
+        return true; // 끝
+    }
+    renderStoryScreen(prefix, story.slides, story.idx);
+    updateStoryNextButton(prefix);
+    return false;
+}
+
+function updateStoryNextButton(prefix) {
+    const total = story?.slides?.length ?? 1;
+    const isLast = (story?.idx ?? 0) >= total - 1;
+
+    // ✅ 이벤트 인트로: 마지막 장만 "퀴즈 시작", 그 전은 무조건 "다음"
+    if (prefix === "event-intro") {
+        const btn = document.getElementById("event-intro-next-btn");
+        if (btn) setButtonLabel(btn, isLast ? "퀴즈 시작" : "다음");
+    }
+}
+
+
+function getClearedMapFromState(state) {
+    const map = new Map();
+
+    if (Array.isArray(state?.events)) {
+        for (const ev of state.events) {
+            if (ev?.key) map.set(ev.key, !!ev.cleared);
+        }
+        return map;
+    }
+
+    const arr =
+        (Array.isArray(state?.clearedEvents) && state.clearedEvents) ||
+        (Array.isArray(state?.completedEvents) && state.completedEvents) ||
+        (Array.isArray(state?.stage?.clearedEvents) && state.stage.clearedEvents) ||
+        [];
+
+    for (const k of arr) map.set(k, true);
+    return map;
+}
+
+
+
+function getNextUnclearedEventKey(state) {
+    const list = state?.events;
+    if (!Array.isArray(list)) return null;
+
+    const next = list.find(ev => ev && ev.key && ev.cleared === false);
+    return next ? next.key : null;
+}
+
+// 서버 state 키 이름이 섞여 와도 프론트가 안 깨지게 정규화
+function normalizeState(raw) {
+    if (!raw) return null;
+    if (raw.status === "NOT_STARTED") return null;
+
+    const summary = raw.summary ?? raw.stageSummary ?? "";
+    const q = raw.question ? { ...raw.question, text: raw.question.text ?? raw.question.question ?? "" } : null;
+
+    const currentEvent = raw.currentEvent ?? null;
+    const event = currentEvent
+        ? { eventKey: currentEvent.eventKey, eventTitle: currentEvent.title, eventIndex: currentEvent.eventIndex, eventTotal: currentEvent.eventTotal }
+        : (raw.event ?? null);
+
+    return { ...raw, summary, question: q, currentEvent, event, score: raw.score ?? 0,
+        totalQuestions: raw.totalQuestions ?? raw.total_questions ?? 0 };
+}
+
 
 // ------------------------
 //  API helpers
 // ------------------------
+// =========================
+// DEV MODE (only when ?dev=1)
+// =========================
+function isDevMode() {
+    return new URLSearchParams(window.location.search).get("dev") === "1";
+}
+
+function devLog(msg) {
+    const el = document.getElementById("dev-log");
+    if (!el) return;
+    el.textContent = String(msg);
+}
+
+async function devSubmit(payload) {
+    const res = await fetch("/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    // ✅ stageCleared가 뜨면 stageOutro 버튼 테스트를 위해 저장해둠
+    if (data.stageCleared && data.stageOutro) {
+        pendingStageOutro = {
+            payload: data.stageOutro,
+            ui: { title: currentState?.stageTitle || "스테이지", subtitle: "교훈/정리" },
+        };
+    }
+
+    return data;
+}
+
+// 현재 문제를 "정답 나올 때까지" 자동으로 뚫는다 (MCQ는 최대 5번 시도)
+async function autoSolveOne() {
+    if (!currentState) await fetchState();
+    if (!currentState || !currentState.question) return;
+
+    const q = currentState.question;
+
+    // 객관식: 0..N-1 brute force
+    if (q.type === "mcq") {
+        const n = Array.isArray(q.options) ? q.options.length : 0;
+        for (let i = 0; i < n; i++) {
+            const data = await devSubmit({ choiceIndex: i });
+
+            devLog(
+                `try=${i}\ncorrect=${!!data.correct}\neventCleared=${!!data.eventCleared}\nstageCleared=${!!data.stageCleared}`
+            );
+
+            if (data.correct || data.eventCleared || data.stageCleared) break;
+        }
+
+        // 서버 state로 동기화
+        await fetchState();
+        localStorage.setItem(DEV_TOUCHED_KEY, "1");
+        showScreen("quiz");
+        renderAll();
+        return;
+    }
+
+    // 주관식: 자동화가 어려워서 안내만 (원하면 input 추가해서 devAnswer로 보내는 방식도 가능)
+    devLog("주관식은 자동해결 불가(현재는). 필요하면 DEV 입력칸 추가해줄게.");
+}
+
+async function autoSolveEvent() {
+    // 안전: 무한 루프 방지
+    for (let k = 0; k < 40; k++) {
+        await autoSolveOne();
+
+        // event cleared면 stop
+        if (lastResult?.eventCleared || pendingStageOutro) break;
+
+        // 서버 기준으로 현재 이벤트가 바뀌었거나(다음 사건) 질문이 없으면 stop
+        if (!currentState || !currentState.question) break;
+    }
+    devLog("autoSolveEvent done");
+}
+
+async function autoSolveStage() {
+    for (let k = 0; k < 120; k++) {
+        await autoSolveOne();
+
+        if (pendingStageOutro) break;       // stageCleared 수신 시 저장됨
+        if (!currentState || !currentState.question) break;
+    }
+    devLog("autoSolveStage done (stageOutro pending이면 로드맵 버튼 확인 ㄱㄱ)");
+}
+
+async function goRoadmapDev() {
+    showScreen("roadmap");
+    await fetchState();
+    renderEventRoadmap();
+    // 로드맵에 pendingStageOutro 버튼 표시 갱신도 같이
+    if (typeof updateStageOutroButton === "function") updateStageOutroButton();
+    devLog("roadmap");
+}
+
+
 async function fetchState() {
     const res = await fetch("/api/state");
-    currentState = await res.json();
-    lastResult = null;
-    renderAll();
-    renderEventRoadmap(); // ✅ state가 바뀌면 로드맵도 최신화
+    const raw = await res.json();
 
+    currentState = normalizeState(raw);
+    lastResult = null;
+
+    // state가 없으면 홈 화면 유지 + 로드맵 렌더도 안전 처리
+    if (!currentState) {
+        renderEventRoadmap();
+        return;
+    }
+
+    renderAll();
+    renderEventRoadmap();
 }
 
 async function submitAnswer() {
@@ -118,13 +585,44 @@ async function submitAnswer() {
 
     const submitBtn = document.getElementById("submit-btn");
 
+    // ✅ (NEW) 이벤트/스테이지 클리어 직후: "요약 보기" 버튼 역할
+    if (postClearTransition) {
+        const t = postClearTransition;
+        postClearTransition = null;
+
+        // 다음 상태로 확정 적용
+        if (pendingState) {
+            currentState = pendingState;
+        }
+        pendingState = null;
+        frozenQuestionState = null;
+
+        // 화면 이동(기존 자동 이동을 '여기'로 옮김)
+        if (t.kind === "eventOutro" && t.payload) {
+            startStory("eventOutro", "event-outro", "event-outro", t.payload, t.ui || {});
+            return;
+        }
+
+        if (t.kind === "stageOutro" && t.payload) {
+            startStory("stageOutro", "stage-outro", "stage-outro", t.payload, t.ui || {});
+            return;
+        }
+
+        // 만약 payload가 없거나 예외면 안전하게 로드맵으로
+        showScreen("roadmap");
+        await fetchState();
+        return;
+    }
+
+
     // 🔁 재시도 모드인 경우: 서버에 다시 보내지 않고 화면만 초기화
     if (isRetryMode) {
+        resetAvatar();
         lastResult = null;
         lastSelectedIndex = null;
         isRetryMode = false;
 
-        if (submitBtn) submitBtn.textContent = "정답 제출";
+        if (submitBtn) setButtonLabel(submitBtn, "정답 제출")
 
         const fb = document.getElementById("feedback");
         if (fb) {
@@ -161,33 +659,97 @@ async function submitAnswer() {
 
     const res = await fetch("/api/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
     });
 
     const data = await res.json();
     lastResult = data;
-    currentState = data.publicState;
 
-    // ✅ 정답/오답 여부에 따라 재시도 모드 설정
-    if (data.correct === false) {
-        isRetryMode = true;  // 틀렸으면 다음 클릭은 '재시도'
-    } else {
-        isRetryMode = false; // 맞추면 원래 모드로
+    // 서버가 준 최신 상태는 "pending"으로만 보관
+    pendingState = normalizeState(data.publicState);
+
+    // 제출 직전(현재 문제) 상태를 얼려둘 용도(필요하면 쓰기)
+    frozenQuestionState = JSON.parse(JSON.stringify(currentState));
+
+    // 1) 이벤트/스테이지 클리어면: pending을 즉시 적용하고 스토리로 이동
+    // 1) 이벤트/스테이지 클리어면: ❌즉시 이동하지 말고 "요약 보기"로 대기
+// 1) 이벤트/스테이지 클리어면: ❌즉시 이동하지 말고 "요약 보기"로 대기
+    if (data.eventCleared || data.stageCleared) {
+        setAvatarCorrect();
+
+        // ✅ (NEW) stageCleared가 같이 뜨는 케이스(마지막 사건) 대비:
+        // eventOutro를 우선 보여주더라도 stageOutro는 로드맵용으로 저장해둔다.
+        if (data.stageCleared && data.stageOutro) {
+            pendingStageOutro = {
+                payload: data.stageOutro,
+                ui: { title: currentState?.stageTitle || "스테이지", subtitle: "교훈/정리" }
+            };
+        }
+
+        // 점수는 반영(다음 상태에 이미 반영되어 있음)
+        currentState.score = pendingState?.score ?? currentState.score;
+
+        // 현재 문제 화면을 유지한 채(해설 읽기), 전환 정보만 저장
+        postClearTransition = null;
+
+        if (data.eventCleared && data.eventOutro) {
+            const eventTitle =
+                currentState?.currentEvent?.title ||
+                currentState?.event?.eventTitle ||
+                "사건";
+
+            postClearTransition = {
+                kind: "eventOutro",
+                payload: data.eventOutro,
+                ui: { title: "사건 요약", subtitle: eventTitle }
+            };
+        } else if (data.stageCleared && data.stageOutro) {
+            postClearTransition = {
+                kind: "stageOutro",
+                payload: data.stageOutro,
+                ui: { title: currentState?.stageTitle || "스테이지", subtitle: "교훈/정리" }
+            };
+        } else {
+            // payload가 없으면 로드맵으로 보내는 안전장치
+            postClearTransition = { kind: "roadmap", payload: null };
+        }
+
+        // 피드백(해설 포함) 보여주고, 버튼을 "요약 보기"로 바꾼 상태로 머무름
+        renderAll();
+        renderFeedback(data);
+
+        // 다음 문제 버튼은 의미 없으니 잠가두기
+        const nextBtn = document.getElementById("next-btn");
+        if (nextBtn) nextBtn.disabled = true;
+
+        return;
     }
 
+
+    // 2) 정답이면: 화면은 그대로 두고(현재 문제 유지), 다음 문제는 pending으로만 보관
+    if (data.correct) {
+        currentState.score = pendingState?.score ?? currentState.score;
+        setAvatarCorrect();
+        renderAll();
+        renderFeedback(data);
+
+        const nextBtn = document.getElementById("next-btn");
+        if (nextBtn) nextBtn.disabled = false;
+
+        return;
+    }
+
+    // 3) 오답이면: 재시도 모드 유지(기존 로직대로)
+    setAvatarWrong();
     renderAll();
     renderFeedback(data);
 
-    // 마지막 문제까지 맞춰서 스테이지 클리어 시 → 요약 화면
-    if (data.stageCleared) {
-        renderSummary(data.publicState);
-        showScreen("summary");
-    }
 }
 
 // 🔹 특정 스테이지를 선택해서 시작
 async function startStage(stageId) {
+    pendingStageOutro = null;
     try {
         const res = await fetch("/api/start_stage", {
             method: "POST",
@@ -202,46 +764,238 @@ async function startStage(stageId) {
         }
 
         await fetchState();
-        showScreen("quiz");
+
+// stage intro 표시(가능하면)
+        const introPayload =
+            currentState?.stageIntro ||
+            currentState?.intro ||       // 혹시 이런 키로 올 수도 있으니
+            null;
+
+        if (introPayload) {
+            startStory(
+                "stageIntro",
+                "stage-intro",
+                "stage-intro",
+                introPayload,
+                { title: currentState.stageTitle || "스테이지", subtitle: currentState.summary || "" }
+            );
+        } else {
+            // 인트로가 없으면 바로 로드맵으로
+            showScreen("roadmap");
+            renderEventRoadmap();
+        }
+
     } catch (err) {
         console.error("startStage 에러:", err);
         alert("스테이지를 시작하는 중 오류가 발생했어요. (클라이언트)");
     }
 }
 
-async function goNext() {
-    const res = await fetch("/api/next", { method: "POST" });
-    const data = await res.json();
+// 🔹 특정 이벤트(사건)부터 시작: 서버에 점프 요청
+async function startEvent(eventKey) {
+    resetAvatar();
+    try {
+        const res = await fetch("/api/start_event", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ eventKey }),
+        });
 
-    if (data.error === "not_cleared") {
-        alert(data.message);
+        if (!res.ok) {
+            console.error("start_event 실패:", res.status);
+            alert("사건을 시작하는 중 오류가 발생했어요. (서버)");
+            return;
+        }
+
+        const raw = await res.json();
+        currentState = normalizeState(raw);
+        // 🔋 이벤트 시작 시 배터리 초기화
+        updateBatteryHUD(currentState);
+        lastResult = null;
+        lastSelectedIndex = null;
+        isRetryMode = false;
+
+        // 🔸 이벤트 인트로 표시(가능하면)
+        // 백엔드 publicState에 currentEvent/outro/intro가 있다면 그걸 쓰고,
+        // 없다면 일단 "바로 퀴즈"로 보낸다.
+        const eventTitle = currentState?.event?.eventTitle || "사건";
+        const introPayload =
+            currentState?.currentEvent?.intro ||
+            currentState?.eventIntro ||           // (혹시 이런 키로 줄 수도 있으니)
+            null;
+
+        if (introPayload) {
+            startStory(
+                "eventIntro",
+                "event-intro",
+                "event-intro",
+                introPayload,
+                { title: eventTitle, subtitle: "사건 배경" }
+            );
+        } else {
+            showScreen("quiz");
+            renderAll();
+        }
+    } catch (err) {
+        console.error("startEvent 에러:", err);
+        alert("사건을 시작하는 중 오류가 발생했어요. (클라이언트)");
+    }
+}
+
+async function restoreProgressEventSilently(eventKey) {
+    if (!eventKey) return;
+
+    const res = await fetch("/api/start_event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventKey }),
+    });
+
+    if (!res.ok) return;
+
+    const raw = await res.json();
+    currentState = normalizeState(raw);
+
+    // UX 잔여 상태 정리
+    lastResult = null;
+    lastSelectedIndex = null;
+    isRetryMode = false;
+    pendingState = null;
+    frozenQuestionState = null;
+    postClearTransition = null;
+
+    // HUD 갱신
+    updateBatteryHUD(currentState);
+}
+
+async function goRoadmapSafe() {
+    // 1) 화면부터 먼저 로드맵으로 전환 (체감상 ‘안 먹힘’ 방지)
+    showScreen("roadmap");
+
+    // 2) 아바타 상태 초기화
+    resetAvatar();
+
+    // 3) 상태 최신화 (없으면 로드맵에 "로딩 중"이라도 뜸)
+    await fetchState();
+
+    // 4) 혹시라도 안전하게 한 번 더 렌더
+    renderEventRoadmap();
+}
+
+
+async function goNext() {
+    resetAvatar();
+    // ✅ pendingState가 있으면 그걸 적용해서 다음 문제로 이동
+    if (pendingState) {
+        currentState = pendingState;
+        pendingState = null;
+        frozenQuestionState = null;
+
+        lastResult = null;
+        lastSelectedIndex = null;
+        isRetryMode = false;
+
+        renderAll();
         return;
     }
 
-    currentState = data.publicState;
+    // 혹시 pending이 없는 케이스(예: 새로고침/예외)면 기존처럼 서버에서 로드
+    await fetchState();
+
     lastResult = null;
     lastSelectedIndex = null;
     isRetryMode = false;
+
     renderAll();
 }
+
 
 // 🔹 조용히 스테이지만 리셋 (confirm 없음)
-async function resetStageCore() {
-    const res = await fetch("/api/reset", { method: "POST" });
-    currentState = await res.json();
+async function resetStageSilently() {
+    pendingStageOutro = null;
+    await fetch("/api/reset", { method: "POST" });
+    currentState = null;
     lastResult = null;
     lastSelectedIndex = null;
     isRetryMode = false;
-    renderAll();
+    await fetchState();
 }
 
-// 🔹 퀴즈 화면에서 “스테이지 리셋” 버튼 눌렀을 때 (confirm 있음)
-async function resetStageWithConfirm() {
-    const ok = confirm("스테이지를 처음부터 다시 시작할까요?");
-    if (!ok) return;
-    await resetStageCore();
-    showScreen("quiz");
+function setAvatarCorrect() {
+    const user = document.getElementById("user-avatar");
+    const partner = document.getElementById("partner-avatar");
+
+    const userBox = user?.closest(".status-item");
+    const partnerBox = partner?.closest(".status-item");
+
+    if (user) user.src = "/static/images/Status/human_correct.png";
+    if (partner) partner.src = "/static/images/Status/robot_correct.png";
+
+    // 유저 즉시 반응
+    triggerAvatarReaction(userBox, "correct");
+
+    // 로봇은 0.25초 늦게 반응
+    setTimeout(() => {
+        triggerAvatarReaction(partnerBox, "correct");
+    }, 250);
 }
+
+
+function setAvatarWrong() {
+    const user = document.getElementById("user-avatar");
+    const partner = document.getElementById("partner-avatar");
+
+    const userBox = user?.closest(".status-item");
+    const partnerBox = partner?.closest(".status-item");
+
+    if (user) user.src = "/static/images/Status/human_incorrect.png";
+    if (partner) partner.src = "/static/images/Status/robot_incorrect.png";
+
+    // 유저 즉시 반응
+    triggerAvatarReaction(userBox, "wrong");
+
+    // 로봇은 반 박자 늦게
+    setTimeout(() => {
+        triggerAvatarReaction(partnerBox, "wrong");
+    }, 250);
+}
+
+
+function resetAvatar() {
+    const user = document.getElementById("user-avatar");
+    const partner = document.getElementById("partner-avatar");
+
+    const userBox = user?.closest(".status-item");
+    const partnerBox = partner?.closest(".status-item");
+
+    if (user) user.src = "/static/images/Status/human_normal.png";
+    if (partner) partner.src = "/static/images/Status/robot_normal.png";
+
+    userBox?.classList.remove("react", "correct", "wrong");
+    partnerBox?.classList.remove("react", "correct", "wrong");
+}
+
+function triggerAvatarReaction(targetEl, resultClass) {
+    if (!targetEl) return;
+
+    targetEl.classList.remove("react", "correct", "wrong");
+    void targetEl.offsetWidth; // reflow (애니메이션 재실행용)
+
+    targetEl.classList.add("react", resultClass);
+}
+
+
+function setButtonLabel(btn, text) {
+    if (!btn) return;
+    const label = btn.querySelector(".btn-label");
+    if (label) {
+        label.textContent = text;
+    } else {
+        // 혹시 라벨 구조가 없는 버튼이면 fallback
+        btn.textContent = text;
+    }
+}
+
 
 // ------------------------
 //  퀴즈 화면 렌더링
@@ -275,19 +1029,22 @@ function renderAll() {
 
     // ✅ 사건(금융사/사건) 라벨 표시 (eventTitle + 사건 내 진행도)
     if (phaseLabelEl) {
-        if (s.event && s.event.eventTitle) {
-            const idx = (s.event.eventIndex ?? 0) + 1;
-            const total = s.event.eventTotal ?? 0;
-            phaseLabelEl.textContent = `${s.event.eventTitle} (${idx}/${total})`;
+        const ce = s.currentEvent;
+        if (ce && ce.title) {
+            const idx = (ce.eventIndex ?? 0) + 1;
+            const total = ce.eventTotal ?? 0;
+            phaseLabelEl.textContent = `${ce.title} · ${idx}/${total}`;
         } else {
             phaseLabelEl.textContent = "문제";
         }
     }
 
+
     // 전체 진행도 (1/50 같은)
     if (progressLabelEl) {
-        progressLabelEl.textContent = `문제 ${(s.currentIndex ?? 0) + 1} / ${s.totalQuestions ?? 0}`;
+        progressLabelEl.textContent = ""; // 전체 진도는 로드맵에서만
     }
+
 
     // 문제 이미지
     if (imgEl) {
@@ -302,7 +1059,7 @@ function renderAll() {
     }
 
     // 문제 텍스트
-    if (questionTextEl) questionTextEl.textContent = q.text || "";
+    if (questionTextEl) questionTextEl.textContent = (q && q.text) ? q.text : "";
 
     // 입력/보기 초기화
     optionsContainer.innerHTML = "";
@@ -355,6 +1112,10 @@ function renderAll() {
             });
         }
 
+        // ✅ 오답이면 재시도 모드 ON, 그 외 OFF
+        isRetryMode = !!(lastResult && lastResult.correct === false);
+
+
         // 정답 맞춘 뒤에는 보기 비활성화
         optionsContainer.querySelectorAll("button").forEach((b) => {
             b.disabled = answeredCorrect;
@@ -370,15 +1131,28 @@ function renderAll() {
     // 제출 버튼은 정답 맞췄으면 비활성화
     const submitBtn = document.getElementById("submit-btn");
     if (submitBtn) {
-        submitBtn.disabled = answeredCorrect;
+        const isClearWaiting = !!postClearTransition && !!(lastResult && lastResult.correct);
 
-        // 🔁 오답 상태이면 라벨을 '재시도'로, 그 외에는 '정답 제출'로
-        if (lastResult && lastResult.correct === false) {
-            submitBtn.textContent = "재시도";
+        // ✅ 일반 정답이면 제출 버튼 비활성화지만,
+        // ✅ 클리어 직후에는 "요약 보기" 버튼으로 써야 하니 활성화
+        submitBtn.disabled = answeredCorrect && !isClearWaiting;
+
+        if (isClearWaiting) {
+            submitBtn.classList.remove("is-retry");
+            setButtonLabel(submitBtn, "요약 보기");
+        } else if (lastResult && lastResult.correct === false) {
+            submitBtn.classList.add("is-retry");
+            setButtonLabel(submitBtn, "재시도");
         } else {
-            submitBtn.textContent = "정답 제출";
+            submitBtn.classList.remove("is-retry");
+            setButtonLabel(submitBtn, "정답 제출");
         }
+        // 🔋 배터리 HUD 진행도 갱신
+        updateBatteryHUD(currentState);
+
     }
+
+
 
     // 다음 문제 버튼 활성화 여부
     if (nextBtn) {
@@ -403,14 +1177,23 @@ function renderFeedback(result) {
     const fb = document.getElementById("feedback");
     if (!fb) return;
 
-    fb.textContent = result.feedback || "";
-    fb.className = "feedback";
-    if (result.correct) {
-        fb.classList.add("correct");
-    } else if (result.correct === false) {
-        fb.classList.add("wrong");
+    const msg = result.feedback ?? (result.correct ? "정답!" : "오답! 다시 시도해봐 🫠");
+    let out = msg;
+
+    // ✅ 정답일 때만 해설 표시(재시도 UX 스포 방지)
+    const exp = currentState?.question?.explanation;
+    if (result.correct === true && exp) {
+        out += `\n\n해설) ${exp}`;
     }
+
+    fb.textContent = out;
+
+    fb.className = "feedback";
+    if (result.correct) fb.classList.add("correct");
+    else if (result.correct === false) fb.classList.add("wrong");
 }
+
+
 
 // ------------------------
 //  요약 화면 렌더링 (단서 기능 제거 버전)
@@ -437,6 +1220,32 @@ function showHint() {
     }
     alert("힌트: " + q.hint);
 }
+
+// ========================
+//  Battery HUD helper
+// ========================
+function updateBatteryHUD(state) {
+    const hud = document.getElementById("battery-hud");
+    if (!hud || !state) return;
+
+    const ce = state.currentEvent;
+    if (!ce) {
+        // 이벤트가 없으면 숨기거나 초기화
+        hud.dataset.level = "0";
+        return;
+    }
+
+    // 1문제 = 1칸 (1~5)
+    const level = Math.min(5, (ce.eventIndex ?? 0) + 1);
+
+    hud.dataset.level = String(level);
+
+    const label = hud.querySelector(".battery-sub");
+    if (label) {
+        label.textContent = `${level} / ${ce.eventTotal ?? 5}`;
+    }
+}
+
 
 // ------------------------
 //  안전하게 이벤트 바인딩하는 헬퍼
@@ -469,14 +1278,109 @@ function bindRoadmapHotspots() {
 // ------------------------
 //  초기 바인딩
 // ------------------------
-window.addEventListener("DOMContentLoaded", () => {
-    // 화면 전환 버튼
+document.addEventListener("DOMContentLoaded", () => {
+    userAvatar = document.getElementById("user-avatar");
+    partnerAvatar = document.getElementById("partner-avatar");
+});
+
+window.addEventListener("DOMContentLoaded", async () => {
+    // ========================
+// 스토리 화면 버튼 바인딩
+// ========================
     bindClick("to-theme-btn", () => showScreen("theme"));
+    bindClick("stage-intro-next-btn", () => {
+        const done = nextStory("stage-intro");
+        if (done) showScreen("roadmap");
+    });
+    bindClick("stage-intro-skip-btn", () => showScreen("roadmap"));
+    bindClick("event-intro-next-btn", () => {
+        const done = nextStory("event-intro");
+        if (done) {
+            showScreen("quiz");
+            resetAvatar();
+            renderAll();
+        }
+    });
+    bindClick("event-intro-back-btn", async () => {
+        if (reviewReturnEventKey) {
+            await restoreProgressEventSilently(reviewReturnEventKey);
+            reviewReturnEventKey = null;
+        }
+        await fetchState();
+        showScreen("roadmap");
+    });
+    const userAvatar = document.getElementById("user-avatar");
+    const partnerAvatar = document.getElementById("partner-avatar");
+
+
+    bindClick("event-outro-next-btn", goRoadmapSafe);
+    bindClick("stage-outro-next-btn", goRoadmapSafe);
+    bindClick("roadmap-stage-outro-btn", () => {
+        if (!pendingStageOutro) return;
+
+        const t = pendingStageOutro;
+        pendingStageOutro = null;      // 한 번 보면 버튼 다시 안 뜨게
+        updateStageOutroButton();      // 버튼 숨김 반영
+
+        startStory(
+            "stageOutro",
+            "stage-outro",
+            "stage-outro",
+            t.payload,
+            t.ui || { title: currentState?.stageTitle || "스테이지", subtitle: "교훈/정리" }
+        );
+    });
+
+
     bindClick("back-home-from-theme", () => showScreen("home"));
-    bindClick("theme-global-btn", () => showScreen("roadmap"));
+
+    async function resumeOrStartStage(stageId = "stage1") {
+        // 1) 서버에 진행 중 STATE가 있는지 먼저 확인
+        const res = await fetch("/api/state");
+        const raw = await res.json();
+        const st = normalizeState(raw);
+
+        // 2) 이미 진행 중이고, 같은 스테이지라면: 리셋 금지 → 로드맵으로 복귀
+        if (st && st.stageTitle && stageId === "stage1") {
+            currentState = st;
+
+            // ✅ 항상 stage-intro를 먼저 보여주고, 끝나면 roadmap으로
+            const payload =
+                currentState?.stageIntro ||
+                currentState?.intro ||
+                cachedStageIntroPayload ||   // (있으면)
+                null;
+
+            if (payload) {
+                startStory(
+                    "stageIntro",
+                    "stage-intro",
+                    "stage-intro",
+                    payload,
+                    { title: currentState.stageTitle || "스테이지", subtitle: currentState.summary || "" }
+                );
+                return;
+            }
+
+            // payload가 없으면 fallback
+            showScreen("roadmap");
+            renderEventRoadmap();
+            updateStageOutroButton();
+            return;
+        }
+
+
+        // 3) 진행 중이 없으면: 정상 시작
+        await startStage(stageId);
+    }
+
+    bindClick("theme-global-btn", async () => {
+        await resumeOrStartStage("stage1");
+    });
+
     bindClick("back-theme-btn", () => showScreen("theme"));
 
-    // (혹시 남아 있을 수 있는 시작 버튼 대응)
+
     const startStageBtn = document.getElementById("start-stage-btn");
     if (startStageBtn) {
         startStageBtn.addEventListener("click", async (e) => {
@@ -485,31 +1389,65 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 🔹 퀴즈에서 로드맵으로 나갈 때: 여기에서만 “처음부터 다시 시작” 경고
-    bindClick("back-roadmap-from-quiz", async () => {
-        const ok = confirm("로드맵으로 돌아갈까요? 돌아갈 시 스테이지 진행내역은 초기화되니 주의해주세요");
-        if (!ok) return;
-        await resetStageCore();
-        showScreen("roadmap");
-    });
+
+    bindClick("back-roadmap-from-quiz", goRoadmapSafe);
+
 
     // 요약 화면 버튼들
-    bindClick("summary-to-roadmap-btn", () => showScreen("roadmap"));
+    bindClick("summary-to-roadmap-btn", goRoadmapSafe);
     bindClick("summary-restart-btn", async () => {
-        await resetStageCore();
-        showScreen("quiz");
+        await resetStageSilently();     // (위에서 분리한 경우)
+        await startStage("stage1");     // 다시 stage intro → roadmap
     });
+
 
     // 퀴즈용 버튼
     bindClick("submit-btn", submitAnswer);
     bindClick("next-btn", goNext);
     bindClick("hint-btn", showHint);
-    bindClick("reset-btn", resetStageWithConfirm);
 
     // 로드맵 핫스팟 바인딩
     bindRoadmapHotspots();
 
     // 처음엔 홈 화면 + 서버 상태 로딩
     showScreen("home");
-    fetchState();
+    if (!isDevMode() && localStorage.getItem(DEV_TOUCHED_KEY) === "1") {
+        await resetStageSilently();
+        localStorage.removeItem(DEV_TOUCHED_KEY);
+    }
+
+    // 이제 정상 상태를 불러옴
+    await fetchState();
+
+    // DEV 패널 바인딩 (?dev=1일 때만)
+    if (isDevMode()) {
+        const panel = document.getElementById("dev-panel");
+        if (panel) panel.style.display = "block";
+
+        const toggle = () => {
+            const p = document.getElementById("dev-panel");
+            if (!p) return;
+            p.style.display = (p.style.display === "none") ? "block" : "none";
+        };
+
+        bindClick("dev-toggle", toggle);
+        bindClick("dev-fetch", async () => { await fetchState(); devLog("state refreshed"); });
+        bindClick("dev-go-roadmap", goRoadmapDev);
+        bindClick("dev-solve-one", autoSolveOne);
+        bindClick("dev-solve-event", autoSolveEvent);
+        bindClick("dev-solve-stage", autoSolveStage);
+        bindClick("dev-reset-stage", async () => {
+            await resetStageSilently();
+            devLog("stage reset done");
+        });
+
+
+        // 핫키: Shift + D 로 토글
+        window.addEventListener("keydown", (e) => {
+            if (e.shiftKey && (e.key === "D" || e.key === "d")) toggle();
+        });
+
+        devLog("DEV MODE ON\n(Shift+D 토글)");
+    }
+
 });

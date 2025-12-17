@@ -1,116 +1,149 @@
-# ============================================
-#  app.py - Flask 웹 서버 메인 파일
-# ============================================
-# 금쪽이 게임의 Flask 웹 서버를 구성하는 메인 파일입니다.
-# 게임 로직(game_logic.py)과 프론트엔드(index.html)를 연결하는 API 엔드포인트를 제공합니다.
+"""
+=================================================
+BUILD NOTE – app.py
+UPDATED: 2025-12-17-12:51 (KST)
 
-from flask import Flask, render_template, jsonify, request
+[CHANGE SUMMARY]
+- /api/start_stage 재호출 시 진행 초기화 방지
 
-# game_logic.py에서 필요한 함수들을 import
+[DETAIL]
+1) 동일 stageId로 start_stage 요청이 들어오면
+   STATE를 재생성(load_stage)하지 않고 기존 STATE를 반환하도록 가드 추가
+
+2) 기대 효과
+   - 프론트가 실수로 start_stage를 재호출해도 진행 유지
+   - 테마 화면 ↔ 로드맵 화면 이동 시 진행도 보존
+
+=================================================
+"""
+
+
+
+
+
+from flask import Flask, jsonify, request, render_template
+import requests
+
 from game_logic import (
-    init_stage_from_url,   # 스테이지 초기화 함수
-    get_public_state,      # 현재 게임 상태 조회
-    submit_answer,         # 정답 제출 처리
-    go_next_question,      # 다음 문제로 이동
-    reset_stage,           # 스테이지 리셋
-    start_stage,           # 특정 스테이지 시작
+    load_stage,
+    get_public_state,
+    submit_answer,
+    start_event,
+    GameState
 )
 
-
-# Flask 애플리케이션 인스턴스 생성
 app = Flask(__name__)
 
+# =========================
+# Firebase Config
+# =========================
 
-# ============================================
-#  서버 시작 시 기본 스테이지 로딩
-# ============================================
-# 서버가 시작될 때 기본 스테이지(stage1)를 자동으로 로드합니다.
-# 만약 로딩에 실패하면 경고 메시지만 출력하고 서버는 계속 실행됩니다.
-try:
-    init_stage_from_url("stage1")
-except Exception as e:
-    print(f"[WARN] 초기 스테이지 로딩 실패: {e}")
+FIREBASE_URL = "https://keumjjogi-problems-storage-default-rtdb.firebaseio.com/.json"
+
+# =========================
+# Global State
+# =========================
+
+GAME_DATA = None      # 전체 quiz_data.json
+STATE: GameState | None = None
 
 
-# ============================================
-#  라우트 (Routes) - API 엔드포인트 정의
-# ============================================
+# =========================
+# Data Loader
+# =========================
 
-@app.route("/")
-def index():
-    """
-    메인 페이지 라우트
-    - 사용자가 웹사이트 루트(/)에 접속하면 templates/index.html을 렌더링합니다.
-    """
+def load_quiz_data():
+    global GAME_DATA
+    if GAME_DATA is None:
+        res = requests.get(FIREBASE_URL)
+        res.raise_for_status()
+        GAME_DATA = res.json()
+    return GAME_DATA
+
+
+# =========================
+# API Endpoints
+# =========================
+
+@app.get("/")
+def home():
     return render_template("index.html")
 
-
 @app.get("/api/state")
-def api_state():
-    """
-    현재 게임 상태 조회 API (GET)
-    - 클라이언트가 현재 게임 상태를 요청할 때 사용합니다.
-    - 반환값: 현재 스테이지, 문제 번호, 점수 등의 공개 상태 정보 (JSON)
-    """
-    data = get_public_state()
-    return jsonify(data)
-
-
-@app.post("/api/submit")
-def api_submit():
-    """
-    정답 제출 API (POST)
-    - 사용자가 문제에 대한 답을 제출할 때 호출됩니다.
-    - 요청 본문(body): 사용자가 입력한 답변 데이터 (JSON)
-    - 반환값: 정답 여부, 피드백 메시지 등 (JSON)
-    """
-    payload = request.get_json(force=True) or {}
-    result = submit_answer(payload)
-    return jsonify(result)
-
-
-@app.post("/api/next")
-def api_next():
-    """
-    다음 문제로 이동 API (POST)
-    - 현재 문제를 완료하고 다음 문제로 넘어갈 때 호출됩니다.
-    - 반환값: 다음 문제의 상태 정보 (JSON)
-    """
-    result = go_next_question()
-    return jsonify(result)
+def api_get_state():
+    if STATE is None:
+        return jsonify({"status": "NOT_STARTED"})
+    return jsonify(get_public_state(STATE))
 
 
 @app.post("/api/start_stage")
 def api_start_stage():
+    global STATE
+    body = request.get_json()
+    stage_id = body.get("stageId", "stage1")
+
+    # ✅ 이미 같은 스테이지가 진행 중이면 리셋하지 말고 그대로 반환
+    if STATE is not None and getattr(STATE.stage, "stage_id", None) == stage_id:
+        return jsonify(get_public_state(STATE))
+
+    data = load_quiz_data()
+    STATE = load_stage(stage_id, data)
+    return jsonify(get_public_state(STATE))
+
+
+
+@app.post("/api/start_event")
+def api_start_event():
     """
-    특정 스테이지 시작 API (POST)
-    - 로드맵/홈 화면에서 사용자가 특정 스테이지를 선택했을 때 호출됩니다.
-    - 요청 본문(body): { "stageId": "stage1" }
-    - stageId가 없으면 기본값으로 "stage1"을 사용합니다.
-    - 반환값: 선택한 스테이지의 초기 상태 정보 (JSON)
+    로드맵에서 금융사(event) 클릭 시
     """
-    data = request.get_json(force=True) or {}
-    stage_id = data.get("stageId") or "stage1"  # stageId 없으면 기본 stage1
-    public = start_stage(stage_id)
-    return jsonify(public)
+    if STATE is None:
+        return jsonify({"error": "Stage not started"}), 400
+
+    body = request.get_json()
+    event_key = body.get("eventKey")
+
+    try:
+        start_event(STATE, event_key)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify(get_public_state(STATE))
+
+
+@app.post("/api/submit")
+def api_submit_answer():
+    """
+    퀴즈 답안 제출
+    """
+    if STATE is None:
+        return jsonify({"error": "Stage not started"}), 400
+
+    body = request.get_json()
+    selected = body.get("choiceIndex")
+
+    result = submit_answer(STATE, selected)
+
+    return jsonify({
+        **result,
+        "publicState": get_public_state(STATE)
+    })
 
 
 @app.post("/api/reset")
 def api_reset():
     """
-    스테이지 리셋 API (POST)
-    - 현재 스테이지를 처음부터 다시 시작할 때 호출됩니다.
-    - main.js에서 resetStageCore() 함수가 이 엔드포인트를 호출합니다.
-    - 반환값: 리셋된 스테이지의 초기 상태 정보 (JSON)
+    현재 stage 리셋 → stage intro로 복귀
     """
-    public_state = reset_stage()
-    return jsonify(public_state)
+    global STATE
+
+    STATE = None
+    return jsonify({"status": "RESET"})
 
 
-# ============================================
-#  서버 실행
-# ============================================
-# 이 파일을 직접 실행하면 Flask 개발 서버가 시작됩니다.
-# debug=True: 코드 변경 시 자동 재시작, 에러 발생 시 상세한 디버깅 정보 제공
+# =========================
+# App Run
+# =========================
+
 if __name__ == "__main__":
     app.run(debug=True)
