@@ -1,62 +1,38 @@
 /*
 =================================================
-BUILD NOTE – main.js
-UPDATED: 2025-12-17-16:52 (KST)
-
-[PATCH TITLE]
-Theme → Stage Entry Flow Unification (Always Stage Intro)
+BUILD NOTE – Stage Outro Replay Behavior Update
+UPDATED: 2025-12-17-20:40
 
 [CHANGE SUMMARY]
-- 테마 선택 화면에서 스테이지로 진입할 때,
-  진행 중 여부와 관계없이 항상 stage-intro를 먼저 재생하도록
-  진입 흐름을 통일함.
+- Stage Outro(스테이지 아웃트로)를
+  "한 번만 보기"가 아닌,
+  "진행 상황 초기화 전까지 반복 시청 가능"하도록 동작 수정.
 
-[BACKGROUND]
-- 기존 구조에서는:
-  · 최초 시작 시에는 stage-intro → roadmap
-  · 로드맵에서 테마로 돌아갔다가 재진입 시에는
-    진행 중 STATE를 감지하여 stage-intro를 건너뛰고
-    곧바로 roadmap으로 이동했음.
+[PREVIOUS BEHAVIOR]
+- 로드맵에서 아웃트로 버튼 클릭 시
+  pendingStageOutro를 즉시 null로 초기화하여
+  아웃트로를 한 번 본 이후 버튼이 사라졌음.
 
-- 이로 인해:
-  · 테마 진입 UX가 상황에 따라 달라지고
-  · “테마 = 세계관 진입 지점”이라는 의미가 약해지는 문제가 있었음.
+[UPDATED BEHAVIOR]
+- 로드맵의 '아웃트로 보기' 버튼 클릭 시
+  pendingStageOutro를 유지하도록 변경.
+- 아웃트로 시청 후 로드맵으로 돌아와도
+  버튼이 계속 표시되어 재시청 가능.
 
-[DESIGN DECISION]
-- 테마 화면은 항상 “스테이지 세계관의 시작점”으로 취급한다.
-- 따라서 테마 → 스테이지 진입 시에는
-  진행 중/재진입 여부와 무관하게
-  반드시 stage-intro를 먼저 보여주도록 설계한다.
-
-[IMPLEMENTATION DETAIL]
-1) resumeOrStartStage() 수정
-   - 기존:
-     · 진행 중 STATE가 있으면 showScreen("roadmap")으로 직행
-   - 변경:
-     · 진행 중 STATE가 있어도 stage-intro payload가 존재하면
-       startStory("stageIntro")를 먼저 실행
-     · stage-intro 종료 시 기존 로직대로 roadmap으로 이동
-
-2) stage-intro payload 처리
-   - publicState에 stageIntro/intro가 존재하면 이를 우선 사용
-   - payload가 없는 예외 케이스에서는
-     기존과 동일하게 roadmap으로 fallback
-
-3) UX 일관성 확보
-   - “테마 선택 → 인트로 → 로드맵” 흐름을 단일화
-   - 진입 시마다 세계관 설명을 다시 상기시켜
-     사용자의 컨텍스트 리셋 효과 강화
-
-[RESULT]
-- 테마 화면에서 스테이지 진입 시
-  항상 동일한 흐름(stage-intro → roadmap) 유지
-- 진행 중/재진입 여부에 따른 UX 분기 제거
-- 로드맵은 순수한 ‘플레이 허브 화면’ 역할로 정리됨
+[INTENTIONAL RESET CONDITIONS]
+- 아래 상황에서는 pendingStageOutro를 정상적으로 초기화함:
+  1) 새로운 스테이지 시작 시
+  2) 진행 상황 초기화(resetStage / resetStageSilently) 시
+  3) DEV 모드 정리 흐름에서 상태 리셋 시
 
 [DESIGN INTENT]
-- Theme Screen = World Entry Point
-- Stage Intro = Narrative Reset
-- Roadmap = Session Hub
+- 아웃트로는 스테이지 클리어에 대한 "보상/정리 콘텐츠"로 간주
+- 사용자가 원할 경우 반복해서 확인할 수 있도록 UX 개선
+- 단, 진행 상태가 초기화되면 자연스럽게 다시 숨겨짐
+
+[RESULT]
+- 스테이지 진행 맥락을 해치지 않으면서
+  아웃트로 접근성과 회독성을 향상시킴
 =================================================
 */
 
@@ -1319,8 +1295,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (!pendingStageOutro) return;
 
         const t = pendingStageOutro;
-        pendingStageOutro = null;      // 한 번 보면 버튼 다시 안 뜨게
-        updateStageOutroButton();      // 버튼 숨김 반영
+
 
         startStory(
             "stageOutro",

@@ -328,25 +328,6 @@ UPDATED: 2025-12-17-16:17
     <!-- ④ 퀴즈 화면 -->
     <section id="quiz-screen" class="screen">
         <div class="card">
-            <!-- 🧠 상태 표시 패널 (유저 / 파트너) -->
-            <div class="status-panel" aria-label="유저 및 파트너 상태">
-                <!-- 유저 상태 -->
-                <div class="status-item user-status">
-                    <img
-                            id="user-avatar"
-                            src="/static/images/Status/human_normal.png"
-                    />
-                </div>
-
-                <!-- 파트너 로봇 상태 -->
-                <div class="status-item partner-status">
-                    <img
-                            id="partner-avatar"
-                            src="/static/images/Status/robot_normal.png"
-                    />
-                </div>
-            </div>
-
             <h1 id="stage-title">스테이지 제목</h1>
             <p class="stage-summary" id="stage-summary"></p>
 
@@ -362,21 +343,46 @@ UPDATED: 2025-12-17-16:17
                         src=""
                         alt="퀴즈 이미지"
                 />
-            </div>
 
-            <!-- ✅ Sci-Fi Battery HUD (Progress 1~5) -->
-            <div id="battery-hud" class="battery-hud" data-level="1" aria-label="에너지 코어 진행도 1/5">
-                <div class="battery-frame" role="img" aria-hidden="true">
-                    <div class="battery-seg"></div>
-                    <div class="battery-seg"></div>
-                    <div class="battery-seg"></div>
-                    <div class="battery-seg"></div>
-                    <div class="battery-seg"></div>
-                </div>
+                <div class="quiz-top-overlay">
+                    <div class="left-stack">
+                        <!-- 🧠 상태 표시 패널 (유저 / 파트너) -->
+                        <div class="status-panel" aria-label="유저 및 파트너 상태">
+                            <!-- 유저 상태 -->
+                            <div class="status-item user-status">
+                                <img
+                                        id="user-avatar"
+                                        src="/static/images/Status/human_normal.png"
+                                />
+                            </div>
 
-                <div class="battery-label">
-                    <div class="battery-title">ENERGY CORE</div>
-                    <div class="battery-sub">1 / 5</div>
+                            <!-- 파트너 로봇 상태 -->
+                            <div class="status-item partner-status">
+                                <img
+                                        id="partner-avatar"
+                                        src="/static/images/Status/robot_normal.png"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-stack">
+                        <!-- ✅ Sci-Fi Battery HUD (Progress 1~5) -->
+                        <div id="battery-hud" class="battery-hud" data-level="1" aria-label="에너지 코어 진행도 1/5">
+                            <div class="battery-frame" role="img" aria-hidden="true">
+                                <div class="battery-seg"></div>
+                                <div class="battery-seg"></div>
+                                <div class="battery-seg"></div>
+                                <div class="battery-seg"></div>
+                                <div class="battery-seg"></div>
+                            </div>
+
+                            <div class="battery-label">
+                                <div class="battery-title">ENERGY CORE</div>
+                                <div class="battery-sub">1 / 5</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
